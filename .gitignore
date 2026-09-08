@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.vscode/
+sif_database.db
+tempCodeRunnerFile.py
