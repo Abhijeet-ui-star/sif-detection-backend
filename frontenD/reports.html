@@ -1,0 +1,73 @@
+nexus
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reports - OIL SIF Detection</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>SAFETY REPORTS</h1>
+        <p>OIL SIF Detection System</p>
+    </header>
+
+
+    <main>
+
+        <section class="welcome">
+
+            <h2>Report History</h2>
+
+            <p>
+                Previously analyzed safety observations are shown below.
+            </p>
+
+            <div id="reportsContainer">
+
+                <p>Loading reports...</p>
+
+            </div>
+
+            <br>
+
+            <button onclick="window.location.href='analyze.html'">
+                Analyze New Report
+            </button>
+
+            <button onclick="window.location.href='dashboard.html'">
+                Back to Dashboard
+            </button>
+
+            <button onclick="window.location.href='index.html'">
+                Home
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>OIL SIF Detection System</p>
+
+        <p>Backend powered by FastAPI</p>
+
+    </footer>
+
+
+    <script src="js/api.js"></script>
+
+    <script src="js/reports.js"></script>
+
+</body>
+
+</html>
+```

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Analyze Safety Report</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Safety Report Analysis</h1>
+        <p>OIL SIF Detection System</p>
+    </header>
+
+
+    <main>
+
+        <!-- Input Section -->
+        <section class="welcome">
+
+            <h2>Enter Safety Observation</h2>
+
+            <p>
+                Describe the safety observation or incident below.
+                The system will analyze it for potential SIF precursors.
+            </p>
+
+            <textarea
+                id="reportInput"
+                placeholder="Example: Worker entered a confined space. Oxygen level is low and toxic gas is detected."
+                rows="7"
+                style="width: 90%; padding: 15px; font-size: 16px; margin: 20px 0; border: 1px solid #ccc; border-radius: 6px;">
+            </textarea>
+
+            <br>
+
+            <button onclick="analyzeSafetyReport()">
+                Analyze Report
+            </button>
+
+            <button onclick="window.location.href='./index.html'">
+    Back to Home
+</button>
+
+        </section>
+
+
+        <!-- Result Section -->
+        <section
+            id="resultSection"
+            class="welcome"
+            style="display: none; margin-top: 30px;">
+
+            <h2>Analysis Result</h2>
+
+            <div class="feature-card">
+
+                <h3>SIF Potential</h3>
+                <p id="sifPotential">-</p>
+
+            </div>
+
+            <div class="feature-card">
+
+                <h3>Risk Level</h3>
+                <p id="riskLevel">-</p>
+
+            </div>
+
+            <div class="feature-card">
+
+                <h3>Life Saving Rule</h3>
+                <p id="lifeSavingRule">-</p>
+
+            </div>
+
+            <div class="feature-card">
+
+                <h3>Hazard</h3>
+                <p id="hazard">-</p>
+
+            </div>
+
+            <div class="feature-card">
+
+                <h3>Barrier Failure</h3>
+                <p id="barrierFailure">-</p>
+
+            </div>
+
+            <div class="feature-card">
+
+                <h3>Confidence</h3>
+                <p id="confidence">-</p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Error Message -->
+        <section
+            id="errorSection"
+            class="welcome"
+            style="display: none; margin-top: 30px;">
+
+            <h2>Error</h2>
+
+            <p id="errorMessage"></p>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>OIL SIF Detection System</p>
+
+        <p>Backend powered by FastAPI</p>
+
+    </footer>
+
+
+    <script src="js/api.js"></script>
+
+    <script src="js/analyze.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - OIL SIF Detection</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>OIL SAFETY DASHBOARD</h1>
+        <p>Serious Injury & Fatality Detection System</p>
+    </header>
+
+
+    <main>
+
+        <!-- Dashboard Cards -->
+        <section class="features">
+
+            <div class="feature-card">
+                <h3>Total Reports</h3>
+                <p id="totalReports">Loading...</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>SIF Detected</h3>
+                <p id="sifDetected">Loading...</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>High Risk</h3>
+                <p id="highRisk">Loading...</p>
+            </div>
+
+            <div class="feature-card">
+                <h3>Low Risk</h3>
+                <p id="lowRisk">Loading...</p>
+            </div>
+
+        </section>
+
+
+        <!-- Navigation -->
+        <section class="welcome" style="margin-top: 30px;">
+
+            <h2>Safety Management</h2>
+
+            <p>
+                Manage safety observations, analyze new reports
+                and view safety statistics.
+            </p>
+
+            <button onclick="window.location.href='analyze.html'">
+                Analyze New Report
+            </button>
+
+            <button onclick="window.location.href='reports.html'">
+                View Reports
+            </button>
+
+            <button onclick="window.location.href='statistics.html'">
+                View Statistics
+            </button>
+
+            <button onclick="window.location.href='index.html'">
+                Back to Home
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>OIL SIF Detection System</p>
+
+        <p>Backend powered by FastAPI</p>
+
+    </footer>
+
+
+    <!-- Backend API -->
+    <script src="js/api.js"></script>
+
+    <!-- Dashboard JavaScript -->
+    <script src="js/dashboard.js"></script>
+
+</body>
+
+</html>
