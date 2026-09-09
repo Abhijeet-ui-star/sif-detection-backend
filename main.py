@@ -91,7 +91,6 @@ def analyze(
             detail="Invalid report. Please enter a proper safety observation."
         )
 
-
     # Safety-related keywords
     safety_keywords = [
 
@@ -120,9 +119,7 @@ def analyze(
 
     ]
 
-
     report_lower = data.report.lower()
-
 
     # Reject unrelated text
     if not any(
@@ -135,10 +132,8 @@ def analyze(
             detail="Invalid safety report. Please enter a safety-related observation."
         )
 
-
     # Analyze report
     result = analyze_report(data.report)
-
 
     # Save result to database
     new_report = SafetyReport(
@@ -159,13 +154,11 @@ def analyze(
 
     )
 
-
     db.add(new_report)
 
     db.commit()
 
     db.refresh(new_report)
-
 
     # Return result
     return {
@@ -194,7 +187,6 @@ def get_reports(
         SafetyReport.id.desc()
     ).all()
 
-
     return {
 
         "success": True,
@@ -222,14 +214,12 @@ def get_report(
         SafetyReport.id == report_id
     ).first()
 
-
     if report is None:
 
         raise HTTPException(
             status_code=404,
             detail="Report not found"
         )
-
 
     return {
 
@@ -253,9 +243,7 @@ def get_statistics(
         SafetyReport
     ).all()
 
-
     total_reports = len(reports)
-
 
     sif_detected = sum(
 
@@ -267,7 +255,6 @@ def get_statistics(
 
     )
 
-
     high_risk = sum(
 
         1
@@ -278,7 +265,6 @@ def get_statistics(
 
     )
 
-
     low_risk = sum(
 
         1
@@ -288,7 +274,6 @@ def get_statistics(
         if report.risk_level == "LOW"
 
     )
-
 
     return {
 
@@ -310,6 +295,71 @@ def get_statistics(
 
 
 # ==========================================
+# RESTORE REPORT #1
+# TEMPORARY ENDPOINT
+# ==========================================
+
+@app.post("/restore-report-1")
+def restore_report_1(
+    db: Session = Depends(get_db)
+):
+
+    # Check whether Report #1 already exists
+    existing_report = db.query(
+        SafetyReport
+    ).filter(
+        SafetyReport.id == 1
+    ).first()
+
+    if existing_report is not None:
+
+        return {
+
+            "success": False,
+
+            "message": "Report #1 already exists"
+
+        }
+
+    # Create Report #1 with exact ID
+    report_1 = SafetyReport(
+
+        id=1,
+
+        report="Safety observation recorded for demonstration.",
+
+        sif_potential="NO",
+
+        risk_level="LOW",
+
+        life_saving_rule="None",
+
+        hazard="No significant SIF precursor detected",
+
+        barrier_failure="None identified",
+
+        confidence=0.90
+
+    )
+
+    db.add(report_1)
+
+    db.commit()
+
+    db.refresh(report_1)
+
+    return {
+
+        "success": True,
+
+        "message": "Report #1 restored successfully",
+
+        "database_id": report_1.id
+
+    }
+
+
+# ==========================================
 # DELETE REPORT
 # ==========================================
 
@@ -325,7 +375,6 @@ def delete_report(
         SafetyReport.id == report_id
     ).first()
 
-
     if report is None:
 
         raise HTTPException(
@@ -333,11 +382,9 @@ def delete_report(
             detail="Report not found"
         )
 
-
     db.delete(report)
 
     db.commit()
-
 
     return {
 
@@ -365,7 +412,6 @@ def health_check(
             SafetyReport
         ).count()
 
-
         return {
 
             "success": True,
@@ -377,7 +423,6 @@ def health_check(
             "message": "Backend is running successfully"
 
         }
-
 
     except Exception:
 
