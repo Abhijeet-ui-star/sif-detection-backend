@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Report Details - OIL SIF Detection</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>REPORT DETAILS</h1>
+        <p>OIL SIF Detection System</p>
+    </header>
+
+
+    <main>
+
+        <section class="welcome">
+
+            <h2>Safety Report</h2>
+
+            <div id="reportContainer">
+
+                <p>Loading report...</p>
+
+            </div>
+
+            <br>
+
+            <button onclick="window.location.href='reports.html'">
+                Back to Reports
+            </button>
+
+            <button onclick="window.location.href='dashboard.html'">
+                Dashboard
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>OIL SIF Detection System</p>
+
+        <p>Backend powered by FastAPI</p>
+
+    </footer>
+
+
+    <script src="js/api.js"></script>
+
+    <script>
+
+        async function loadReportDetails() {
+
+            const container =
+                document.getElementById("reportContainer");
+
+            // Get report ID from URL
+            const urlParams =
+                new URLSearchParams(window.location.search);
+
+            const reportId =
+                urlParams.get("id");
+
+
+            // Check ID
+            if (!reportId) {
+
+                container.innerHTML = `
+                    <p>Report ID not provided.</p>
+                `;
+
+                return;
+            }
+
+
+            try {
+
+                // Get report from backend
+                const data =
+                    await getReport(reportId);
+
+
+                if (!data.success) {
+
+                    container.innerHTML = `
+                        <p>Report not found.</p>
+                    `;
+
+                    return;
+                }
+
+
+                const report = data.report;
+
+
+                // Display report
+                container.innerHTML = `
+
+                    <div class="feature-card">
+
+                        <h3>Report #${report.id}</h3>
+
+                        <p>
+                            <strong>Observation:</strong><br>
+                            ${report.report}
+                        </p>
+
+                        <p>
+                            <strong>SIF Potential:</strong>
+                            ${report.sif_potential}
+                        </p>
+
+                        <p>
+                            <strong>Risk Level:</strong>
+                            ${report.risk_level}
+                        </p>
+
+                        <p>
+                            <strong>Life Saving Rule:</strong>
+                            ${report.life_saving_rule}
+                        </p>
+
+                        <p>
+                            <strong>Hazard:</strong>
+                            ${report.hazard}
+                        </p>
+
+                        <p>
+                            <strong>Barrier Failure:</strong>
+                            ${report.barrier_failure}
+                        </p>
+
+                        <p>
+                            <strong>Confidence:</strong>
+                            ${(report.confidence * 100).toFixed(0)}%
+                        </p>
+
+                        <p>
+                            <strong>Created At:</strong>
+                            ${report.created_at}
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+                container.innerHTML = `
+                    <p>
+                        Unable to connect to backend.
+                    </p>
+                `;
+            }
+        }
+
+
+        // Load report when page opens
+        loadReportDetails();
+
+    </script>
+
+</body>
+
+</html>

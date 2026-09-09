@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Oil Safety - SIF Detection</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>OIL SAFETY</h1>
+        <p>Serious Injury & Fatality (SIF) Detection System</p>
+    </header>
+
+
+    <!-- Main Section -->
+    <main>
+
+        <section class="welcome">
+
+            <h2>Safety Observation System</h2>
+
+            <p>
+                Identify potential Serious Injury and Fatality (SIF)
+                precursors from safety observations.
+            </p>
+
+            <button onclick="openAnalyzePage()">
+                Analyze Safety Report
+            </button>
+
+            <button onclick="openDashboard()">
+                View Dashboard
+            </button>
+
+        </section>
+
+
+        <!-- Features -->
+        <section class="features">
+
+            <div class="feature-card">
+                <h3>SIF Detection</h3>
+                <p>
+                    Detect potential serious injury and fatality
+                    precursors from safety reports.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>Risk Analysis</h3>
+                <p>
+                    Identify the risk level and major safety hazards.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>Report History</h3>
+                <p>
+                    View previously analyzed safety observations.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>Statistics</h3>
+                <p>
+                    View overall safety statistics and SIF trends.
+                </p>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            OIL SIF Detection System
+        </p>
+
+        <p>
+            Backend powered by FastAPI
+        </p>
+
+    </footer>
+
+
+    <!-- JavaScript -->
+    <script>
+
+        function openAnalyzePage() {
+            window.location.href = "analyze.html";
+        }
+
+        function openDashboard() {
+            window.location.href = "dashboard.html";
+        }
+
+    </script>
+
+</body>
+
+</html>
