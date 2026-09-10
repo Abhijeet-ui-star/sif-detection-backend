@@ -1,35 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>OIL Safety - SIF Detection</title>
 
-    <title>Oil Safety - SIF Detection</title>
+<link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="css/style.css">
-</head>
+</head><body><!-- Header -->
+<header>
+    <h1>OIL SAFETY</h1>
 
-<body>
-
-    <!-- Header -->
-    <header>
-        <h1>OIL SAFETY</h1>
-        <p>Serious Injury & Fatality (SIF) Detection System</p>
-    </header>
+    <p>
+        Serious Injury & Fatality (SIF) Detection System
+    </p>
+</header>
 
 
-    <!-- Main Section -->
-    <main>
+<!-- Main Content -->
+<main>
 
-        <section class="welcome">
+    <!-- Hero Section -->
+    <section class="welcome">
 
-            <h2>Safety Observation System</h2>
+        <h2>Safety Observation Intelligence</h2>
 
-            <p>
-                Identify potential Serious Injury and Fatality (SIF)
-                precursors from safety observations.
-            </p>
+        <p>
+            Analyze safety observations to identify potential
+            Serious Injury and Fatality (SIF) precursors,
+            assess risk levels, and understand critical
+            safety barriers.
+        </p>
+
+        <div>
 
             <button onclick="openAnalyzePage()">
                 Analyze Safety Report
@@ -39,73 +39,105 @@
                 View Dashboard
             </button>
 
-        </section>
+        </div>
+
+    </section>
 
 
-        <!-- Features -->
-        <section class="features">
+    <!-- System Features -->
+    <section class="features">
 
-            <div class="feature-card">
-                <h3>SIF Detection</h3>
-                <p>
-                    Detect potential serious injury and fatality
-                    precursors from safety reports.
-                </p>
-            </div>
+        <div class="feature-card">
 
-            <div class="feature-card">
-                <h3>Risk Analysis</h3>
-                <p>
-                    Identify the risk level and major safety hazards.
-                </p>
-            </div>
+            <h3>🛡️ SIF Detection</h3>
 
-            <div class="feature-card">
-                <h3>Report History</h3>
-                <p>
-                    View previously analyzed safety observations.
-                </p>
-            </div>
+            <p>
+                Detect potential Serious Injury and Fatality
+                precursors from reported safety observations.
+            </p>
 
-            <div class="feature-card">
-                <h3>Statistics</h3>
-                <p>
-                    View overall safety statistics and SIF trends.
-                </p>
-            </div>
-
-        </section>
-
-    </main>
+        </div>
 
 
-    <!-- Footer -->
-    <footer>
+        <div class="feature-card">
+
+            <h3>⚠️ Risk Analysis</h3>
+
+            <p>
+                Identify risk levels, hazards, and potential
+                safety concerns requiring attention.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <h3>📋 Report History</h3>
+
+            <p>
+                Review previously analyzed safety observations
+                and their assessment results.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <h3>📊 Safety Statistics</h3>
+
+            <p>
+                Monitor overall reports, SIF detections,
+                and safety risk statistics.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- System Information -->
+    <section class="welcome">
+
+        <h2>How It Works</h2>
 
         <p>
-            OIL SIF Detection System
+            Submit a safety observation → Analyze the report →
+            Identify SIF potential and risk → Review the results
+            in the dashboard and report history.
         </p>
 
-        <p>
-            Backend powered by FastAPI
-        </p>
+    </section>
 
-    </footer>
+</main>
 
 
-    <!-- JavaScript -->
-    <script>
+<!-- Footer -->
+<footer>
 
-        function openAnalyzePage() {
-            window.location.href = "analyze.html";
-        }
+    <p>
+        OIL SIF Detection System
+    </p>
 
-        function openDashboard() {
-            window.location.href = "dashboard.html";
-        }
+    <p>
+        Backend powered by FastAPI
+    </p>
 
-    </script>
+</footer>
 
-</body>
 
-</html>
+<!-- JavaScript -->
+<script>
+
+    function openAnalyzePage() {
+        window.location.href = "analyze.html";
+    }
+
+    function openDashboard() {
+        window.location.href = "dashboard.html";
+    }
+
+</script>
+
+</body></html>
