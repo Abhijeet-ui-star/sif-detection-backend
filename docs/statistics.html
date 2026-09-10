@@ -13,8 +13,6 @@
 
     <style>
 
-        /* Statistics chart */
-
         .chart-box {
             background: white;
             padding: 30px;
@@ -73,8 +71,6 @@
 <body>
 
 
-    <!-- HEADER -->
-
     <header>
 
         <h1>SAFETY STATISTICS</h1>
@@ -88,8 +84,6 @@
 
     <main>
 
-
-        <!-- INTRODUCTION -->
 
         <section class="welcome">
 
@@ -299,8 +293,6 @@
     </main>
 
 
-    <!-- FOOTER -->
-
     <footer>
 
         <p>
@@ -314,9 +306,12 @@
     </footer>
 
 
-    <!-- JAVASCRIPT -->
+    <!-- BACKEND API -->
 
     <script src="js/api.js"></script>
+
+
+    <!-- STATISTICS JAVASCRIPT -->
 
     <script src="js/statistics.js"></script>
 
@@ -331,8 +326,15 @@
 
                 const data = await getStatistics();
 
+                console.log(
+                    "STATISTICS RESPONSE:",
+                    data
+                );
 
-                if (!data.success) {
+
+                // Backend returns statistics directly
+
+                if (!data) {
 
                     throw new Error(
                         "Unable to load statistics"
@@ -341,25 +343,22 @@
                 }
 
 
-                const statistics = data.statistics;
-
-
-                // Get values
+                // Get values from backend
 
                 const total =
-                    statistics.total_reports;
+                    data.total_reports ?? 0;
 
                 const sif =
-                    statistics.sif_detected;
+                    data.sif_reports ?? 0;
 
                 const high =
-                    statistics.high_risk;
+                    data.high_risk ?? 0;
 
                 const low =
-                    statistics.low_risk;
+                    data.low_risk ?? 0;
 
 
-                // Display numbers
+                // Display chart numbers
 
                 document.getElementById("chartSif")
                     .textContent = sif;
