@@ -1,73 +1,459 @@
-nexus
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Reports - OIL SIF Detection</title>
+    <title>Report History - OIL SIF Detection</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f9;
+            color: #222;
+        }
+
+        header {
+            background: #123b5d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            font-size: 15px;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .title h2 {
+            margin-bottom: 8px;
+            color: #123b5d;
+        }
+
+        .title p {
+            color: #666;
+        }
+
+        #reportsContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.10);
+            border-left: 5px solid #123b5d;
+        }
+
+        .report-card h3 {
+            margin-top: 0;
+            color: #123b5d;
+        }
+
+        .report-card p {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .risk {
+            font-weight: bold;
+        }
+
+        .details {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+        }
+
+        .loading,
+        .no-reports,
+        .error {
+            background: white;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .error {
+            color: #b00020;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 30px 0;
+        }
+
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            background: #123b5d;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: #123b5d;
+            color: white;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 94%;
+            }
+
+            header h1 {
+                font-size: 23px;
+            }
+
+            .report-card {
+                padding: 17px;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <header>
-        <h1>SAFETY REPORTS</h1>
-        <p>OIL SIF Detection System</p>
-    </header>
+<header>
+    <h1>OIL SIF Detection System</h1>
+    <p>Safety Report History</p>
+</header>
+
+<div class="container">
+
+    <div class="title">
+        <h2>Report History</h2>
+        <p>Previously analyzed safety observations are shown below.</p>
+    </div>
+
+    <div id="reportsContainer">
+        <div class="loading">
+            Loading reports...
+        </div>
+    </div>
+
+    <div class="buttons">
+
+        <button onclick="goToAnalyze()">
+            Analyze New Report
+        </button>
+
+        <button onclick="goToDashboard()">
+            Back to Dashboard
+        </button>
+
+        <button onclick="goToHome()">
+            Home
+        </button>
+
+    </div>
+
+</div>
+
+<footer>
+    OIL SIF Detection System
+</footer>
 
 
-    <main>
+<script>
 
-        <section class="welcome">
+    // =====================================================
+    // BACKEND URL
+    // =====================================================
 
-            <h2>Report History</h2>
-
-            <p>
-                Previously analyzed safety observations are shown below.
-            </p>
-
-            <div id="reportsContainer">
-
-                <p>Loading reports...</p>
-
-            </div>
-
-            <br>
-
-            <button onclick="window.location.href='analyze.html'">
-                Analyze New Report
-            </button>
-
-            <button onclick="window.location.href='dashboard.html'">
-                Back to Dashboard
-            </button>
-
-            <button onclick="window.location.href='index.html'">
-                Home
-            </button>
-
-        </section>
-
-    </main>
+    const API_URL = "http://127.0.0.1:8000";
 
 
-    <footer>
+    // =====================================================
+    // LOAD REPORTS
+    // =====================================================
 
-        <p>OIL SIF Detection System</p>
+    async function loadReports() {
 
-        <p>Backend powered by FastAPI</p>
+        const container =
+            document.getElementById("reportsContainer");
 
-    </footer>
+        try {
+
+            const response =
+                await fetch(`${API_URL}/reports`);
+
+            if (!response.ok) {
+                throw new Error("Failed to load reports");
+            }
+
+            const reports =
+                await response.json();
+
+            container.innerHTML = "";
 
 
-    <script src="js/api.js"></script>
+            if (!reports || reports.length === 0) {
 
-    <script src="js/reports.js"></script>
+                container.innerHTML = `
+                    <div class="no-reports">
+                        No safety reports available.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            reports.forEach((report, index) => {
+
+                const card =
+                    document.createElement("div");
+
+                card.className = "report-card";
+
+
+                card.innerHTML = `
+
+                    <h3>
+                        Report ${index + 1}
+                    </h3>
+
+                    <p>
+                        <span class="label">
+                            Report ID:
+                        </span>
+
+                        ${report.id ?? "N/A"}
+                    </p>
+
+
+                    <p>
+                        <span class="label">
+                            Observation:
+                        </span>
+
+                        ${report.report ?? "N/A"}
+                    </p>
+
+
+                    <p>
+                        <span class="label">
+                            SIF Detected:
+                        </span>
+
+                        ${report.sif_potential ?? "N/A"}
+                    </p>
+
+
+                    <p>
+                        <span class="label">
+                            Risk Level:
+                        </span>
+
+                        <span class="risk">
+                            ${report.risk_level ?? "N/A"}
+                        </span>
+                    </p>
+
+
+                    <div class="details">
+
+                        <p>
+                            <span class="label">
+                                Life Saving Rule:
+                            </span>
+
+                            ${report.life_saving_rule ?? "N/A"}
+                        </p>
+
+
+                        <p>
+                            <span class="label">
+                                Hazard:
+                            </span>
+
+                            ${report.hazard ?? "N/A"}
+                        </p>
+
+
+                        <p>
+                            <span class="label">
+                                Barrier Failure:
+                            </span>
+
+                            ${report.barrier_failure ?? "N/A"}
+                        </p>
+
+
+                        <p>
+                            <span class="label">
+                                Confidence:
+                            </span>
+
+                            ${
+                                report.confidence !== null &&
+                                report.confidence !== undefined
+                                ? (report.confidence * 100).toFixed(0) + "%"
+                                : "N/A"
+                            }
+                        </p>
+
+
+                        <p>
+                            <span class="label">
+                                Created At:
+                            </span>
+
+                            ${formatDate(report.created_at)}
+                        </p>
+
+                    </div>
+
+                `;
+
+
+                // IMPORTANT:
+                // No DELETE button is created here.
+                // Workers can view reports only.
+
+                container.appendChild(card);
+
+            });
+
+        }
+
+        catch (error) {
+
+            console.error("Error:", error);
+
+            container.innerHTML = `
+
+                <div class="error">
+
+                    Unable to load reports.
+
+                    <br><br>
+
+                    Please check that the backend
+                    server is running.
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // DATE FORMAT
+    // =====================================================
+
+    function formatDate(dateValue) {
+
+        if (!dateValue) {
+            return "N/A";
+        }
+
+        try {
+
+            const date =
+                new Date(dateValue);
+
+            if (isNaN(date.getTime())) {
+                return dateValue;
+            }
+
+            return date.toLocaleString();
+
+        }
+
+        catch (error) {
+
+            return dateValue;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // NAVIGATION
+    // =====================================================
+
+    function goToAnalyze() {
+
+        window.location.href =
+            "analyse.html";
+
+    }
+
+
+    function goToDashboard() {
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+
+    function goToHome() {
+
+        window.location.href =
+            "index.html";
+
+    }
+
+
+    // =====================================================
+    // LOAD REPORTS WHEN PAGE OPENS
+    // =====================================================
+
+    loadReports();
+
+</script>
 
 </body>
-
 </html>
-```

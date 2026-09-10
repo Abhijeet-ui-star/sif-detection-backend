@@ -1,17 +1,63 @@
+import re
+
+
+# =========================================================
+# TEXT NORMALIZATION
+# =========================================================
+
+def normalize(text):
+    text = str(text).lower().strip()
+    text = re.sub(r"[-_/]", " ", text)
+    text = re.sub(r"\s+", " ", text)
+    return text
+
+
+# =========================================================
+# RESULT HELPER
+# =========================================================
+
+def result(rule, hazard, barrier, confidence):
+    return {
+        "sif_potential": "YES",
+        "risk_level": "HIGH",
+        "life_saving_rule": rule,
+        "hazard": hazard,
+        "barrier_failure": barrier,
+        "confidence": confidence
+    }
+
+
+def safe_result():
+    return {
+        "sif_potential": "NO",
+        "risk_level": "LOW",
+        "life_saving_rule": "None",
+        "hazard": "No significant SIF precursor detected",
+        "barrier_failure": "None identified",
+        "confidence": 0.90
+    }
+
+
+def default_result():
+    return {
+        "sif_potential": "NO",
+        "risk_level": "LOW",
+        "life_saving_rule": "None",
+        "hazard": "General safety hazard",
+        "barrier_failure": "Not identified",
+        "confidence": 0.70
+    }
+
+
+def contains(text, phrases):
+    return any(phrase in text for phrase in phrases)
+
+
+# =========================================================
+# MAIN ANALYZER
+# =========================================================
+
 def analyze_report(report):
-    """
-    Rule-based SIF precursor detector.
-
-    Input:
-        report (str) - Safety observation/report text
-
-    Output:
-        Structured SIF analysis
-    """
-
-    # ---------------------------------------------------------
-    # Basic validation
-    # ---------------------------------------------------------
 
     if not report or not isinstance(report, str):
         return {
@@ -23,67 +69,87 @@ def analyze_report(report):
             "confidence": 0.50
         }
 
-    report = report.lower().strip()
+    text = normalize(report)
 
-    # ---------------------------------------------------------
-    # 0. SAFE / NORMAL CONDITIONS
-    # ---------------------------------------------------------
-    # Check safe statements BEFORE checking hazard keywords.
-    # This prevents phrases like "no hazardous gas" from
-    # being detected as a gas hazard.
+    # =====================================================
+    # EXPLICITLY SAFE OBSERVATIONS
+    # =====================================================
 
-    safe_phrases = [
+    safe_statements = [
         "no hazard",
         "no hazards",
-        "no hazardous gas",
-        "no hazardous gases",
-        "no gas detected",
-        "no gas leakage",
         "no gas leak",
+        "no gas leakage",
+        "no gas detected",
+        "no toxic gas",
+        "no dangerous atmosphere",
         "oxygen level is normal",
         "oxygen level normal",
         "normal oxygen",
-        "oxygen is normal",
         "safe atmosphere",
         "atmosphere is safe",
-        "no dangerous atmosphere",
         "no danger",
+        "no significant risk",
         "no risk",
-        "risk free",
+        "working safely",
+        "worked safely",
+        "work completed safely",
         "safely completed",
         "safe working condition",
-        "working safely",
         "no unsafe condition",
         "no unsafe conditions",
-        "outside the confined space",
-        "outside confined space",
         "no confined space entry",
         "confined space not entered",
+        "outside confined space",
+        "outside the confined space",
         "no welding",
         "no hot work",
         "no electrical hazard",
         "energy properly isolated",
+        "equipment properly isolated",
         "properly isolated",
         "fall protection provided",
         "harness used",
-        "safety harness used"
+        "safety harness used",
+        "proper pedestrian control",
+        "pedestrian control was provided",
+        "trench properly protected",
+        "excavation properly protected"
     ]
 
-    if any(phrase in report for phrase in safe_phrases):
-        return {
-            "sif_potential": "NO",
-            "risk_level": "LOW",
-            "life_saving_rule": "None",
-            "hazard": "No significant SIF precursor detected",
-            "barrier_failure": "None identified",
-            "confidence": 0.90
-        }
+    # Explicit safe sentence should normally override
+    # simple mentions such as "welding", "ladder", etc.
+    if contains(text, safe_statements):
+        # Exception:
+        # If the same report contains an explicit unsafe
+        # condition, continue checking the hazard rules.
+        unsafe_markers = [
+            "without",
+            "not properly",
+            "not provided",
+            "not followed",
+            "failed",
+            "failure",
+            "unsafe",
+            "exposed",
+            "leak",
+            "deficiency",
+            "deficient",
+            "collapsed",
+            "collapse",
+            "struck",
+            "caught between",
+            "near miss"
+        ]
 
-    # ---------------------------------------------------------
+        if not contains(text, unsafe_markers):
+            return safe_result()
+
+    # =====================================================
     # 1. CONFINED SPACE
-    # ---------------------------------------------------------
+    # =====================================================
 
-    confined_space_keywords = [
+    confined = [
         "confined space",
         "enclosed space",
         "tank entry",
@@ -94,241 +160,362 @@ def analyze_report(report):
         "entered manhole"
     ]
 
-    if any(keyword in report for keyword in confined_space_keywords):
+    confined_safe = [
+        "no confined space entry",
+        "confined space not entered",
+        "outside confined space",
+        "outside the confined space"
+    ]
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Confined Space",
-            "hazard": "Dangerous atmosphere / oxygen deficiency",
-            "barrier_failure": "Gas testing or confined-space controls not followed",
-            "confidence": 0.95
-        }
+    confined_unsafe = [
+        "without gas testing",
+        "without gas test",
+        "no gas testing",
+        "no gas test",
+        "without atmospheric testing",
+        "without atmosphere testing",
+        "without ventilation",
+        "without permit",
+        "without confined space permit",
+        "low oxygen",
+        "oxygen deficiency",
+        "toxic gas",
+        "dangerous atmosphere",
+        "hazardous atmosphere",
+        "gas detected"
+    ]
 
-    # ---------------------------------------------------------
+    if contains(text, confined) and not contains(text, confined_safe):
+
+        if contains(text, confined_unsafe) or contains(text, [
+            "entered confined space",
+            "entered a confined space",
+            "inside confined space",
+            "inside a confined space",
+            "working in confined space",
+            "working inside confined space",
+            "worker entered"
+        ]):
+            return result(
+                "Confined Space",
+                "Dangerous atmosphere / oxygen deficiency",
+                "Gas testing or confined-space controls not followed",
+                0.95
+            )
+
+    # =====================================================
     # 2. HOT WORK
-    # ---------------------------------------------------------
+    # =====================================================
 
-    hot_work_keywords = [
+    hot_work = [
         "welding",
         "hot work",
         "gas cutting",
+        "flame cutting",
         "cutting operation",
-        "grinding",
-        "flame cutting"
+        "grinding"
     ]
 
-    if any(keyword in report for keyword in hot_work_keywords):
+    hot_work_unsafe = [
+        "without fire protection",
+        "without proper fire protection",
+        "without fire watch",
+        "without hot work permit",
+        "without permit",
+        "without proper precautions",
+        "without precautions",
+        "near flammable material",
+        "near flammable materials",
+        "flammable material nearby",
+        "fire protection not provided",
+        "fire watch not provided",
+        "hot work controls not followed",
+        "hot work precautions not followed",
+        "unsafe welding",
+        "unsafe hot work",
+        "unsafe grinding"
+    ]
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Hot Work",
-            "hazard": "Fire / explosion",
-            "barrier_failure": "Hot-work controls or fire prevention measures not followed",
-            "confidence": 0.90
-        }
+    if contains(text, hot_work):
 
-    # ---------------------------------------------------------
+        if contains(text, hot_work_unsafe):
+            return result(
+                "Hot Work",
+                "Fire / explosion",
+                "Hot-work controls or fire prevention measures not followed",
+                0.90
+            )
+
+    # =====================================================
     # 3. ENERGY ISOLATION / LOTO
-    # ---------------------------------------------------------
+    # =====================================================
 
-    loto_keywords = [
+    loto = [
         "lockout",
         "lock out",
         "tagout",
         "tag out",
         "loto",
         "energy isolation",
+        "equipment isolation",
+        "equipment isolated"
+    ]
+
+    loto_unsafe = [
+        "not properly isolated",
         "not isolated",
         "without isolation",
         "isolation not done",
         "isolation failed",
-        "equipment not isolated"
+        "equipment was not isolated",
+        "equipment was not properly isolated",
+        "equipment not isolated",
+        "energy was not isolated",
+        "energy not isolated",
+        "lockout not completed",
+        "lockout was not completed",
+        "tagout not completed",
+        "tagout was not completed"
     ]
 
-    if any(keyword in report for keyword in loto_keywords):
+    if contains(text, loto):
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Energy Isolation",
-            "hazard": "Uncontrolled energy",
-            "barrier_failure": "Energy was not properly isolated",
-            "confidence": 0.92
-        }
+        if contains(text, loto_unsafe):
+            return result(
+                "Energy Isolation",
+                "Uncontrolled energy",
+                "Energy was not properly isolated",
+                0.92
+            )
 
-    # ---------------------------------------------------------
+    # =====================================================
     # 4. WORKING AT HEIGHT
-    # ---------------------------------------------------------
+    # =====================================================
 
-    height_keywords = [
+    height = [
         "working at height",
         "work at height",
         "working from height",
         "fall from height",
         "scaffold",
         "scaffolding",
-        "ladder",
-        "without harness",
-        "without fall protection",
-        "no fall protection",
-        "unprotected height",
-        "edge without protection"
+        "ladder"
     ]
 
-    if any(keyword in report for keyword in height_keywords):
+    height_unsafe = [
+        "without harness",
+        "without safety harness",
+        "without fall protection",
+        "no fall protection",
+        "fall protection not provided",
+        "harness not used",
+        "safety harness not used",
+        "unprotected height",
+        "edge without protection",
+        "unsafe work at height",
+        "working at height without"
+    ]
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Working at Height",
-            "hazard": "Fall from height",
-            "barrier_failure": "Fall protection was not used or was inadequate",
-            "confidence": 0.93
-        }
+    if contains(text, height):
 
-    # ---------------------------------------------------------
+        if contains(text, height_unsafe):
+            return result(
+                "Working at Height",
+                "Fall from height",
+                "Fall protection was not used or was inadequate",
+                0.93
+            )
+
+    # =====================================================
     # 5. LINE OF FIRE
-    # ---------------------------------------------------------
+    # =====================================================
 
-    line_of_fire_keywords = [
+    line_of_fire = [
         "line of fire",
-        "line-of-fire",
         "caught between",
         "crushing hazard",
         "pinch point",
         "struck by",
         "standing below suspended load",
-        "in the line of fire",
-        "worker in line of fire"
+        "worker in line of fire",
+        "in the line of fire"
     ]
 
-    if any(keyword in report for keyword in line_of_fire_keywords):
+    line_safe = [
+        "no line of fire",
+        "not in the line of fire",
+        "outside the line of fire"
+    ]
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Line of Fire",
-            "hazard": "Struck-by / caught-between / crushing",
-            "barrier_failure": "Worker entered an unsafe line-of-fire zone",
-            "confidence": 0.91
-        }
+    if contains(text, line_of_fire) and not contains(text, line_safe):
+        return result(
+            "Line of Fire",
+            "Struck-by / caught-between / crushing",
+            "Worker entered an unsafe line-of-fire zone",
+            0.91
+        )
 
-    # ---------------------------------------------------------
+    # =====================================================
     # 6. LIFTING OPERATIONS
-    # ---------------------------------------------------------
+    # =====================================================
 
-    lifting_keywords = [
+    lifting_unsafe = [
+        "standing below suspended load",
+        "worker below suspended load",
+        "without exclusion zone",
+        "no exclusion zone",
+        "exclusion zone not maintained",
+        "unsafe lifting",
+        "load dropped",
+        "dropped load",
+        "lifting controls not followed",
+        "suspended load over workers",
+        "load suspended over worker"
+    ]
+
+    lifting_general = [
         "lifting operation",
-        "lifting",
-        "crane",
+        "crane operation",
         "suspended load",
-        "heavy load",
-        "rigging",
         "lifting equipment",
-        "load suspended",
-        "crane operation"
+        "rigging",
+        "crane"
     ]
 
-    if any(keyword in report for keyword in lifting_keywords):
+    if contains(text, lifting_unsafe):
+        return result(
+            "Lifting Operations",
+            "Dropped or suspended load",
+            "Lifting-zone controls or exclusion zone not followed",
+            0.89
+        )
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Lifting Operations",
-            "hazard": "Dropped or suspended load",
-            "barrier_failure": "Lifting-zone controls or exclusion zone not followed",
-            "confidence": 0.89
-        }
+    # A simple "lifting" statement is not automatically SIF.
+    if contains(text, lifting_general):
+        if contains(text, [
+            "unsafe",
+            "without",
+            "not followed",
+            "not maintained",
+            "not provided",
+            "failed"
+        ]):
+            return result(
+                "Lifting Operations",
+                "Dropped or suspended load",
+                "Lifting-zone controls or exclusion zone not followed",
+                0.89
+            )
 
-    # ---------------------------------------------------------
-    # 7. ELECTRICAL
-    # ---------------------------------------------------------
+    # =====================================================
+    # 7. ELECTRICAL SAFETY
+    # =====================================================
 
-    electrical_keywords = [
-        "electrical work",
-        "electrical hazard",
+    electrical_unsafe = [
+        "exposed live wire",
+        "live wire exposed",
         "electric shock",
-        "live wire",
-        "live electrical",
-        "exposed wire",
+        "electric shock risk",
+        "without electrical isolation",
+        "electrical isolation not done",
+        "working on live equipment",
+        "working on live electrical equipment",
         "energized equipment",
-        "electrical equipment energized",
-        "working on live equipment"
+        "live electrical equipment",
+        "exposed electrical wire"
     ]
 
-    if any(keyword in report for keyword in electrical_keywords):
+    if contains(text, electrical_unsafe):
+        return result(
+            "Electrical Safety",
+            "Electric shock / arc flash",
+            "Electrical isolation or protection was inadequate",
+            0.91
+        )
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Electrical Safety",
-            "hazard": "Electric shock / arc flash",
-            "barrier_failure": "Electrical isolation or protection was inadequate",
-            "confidence": 0.91
-        }
-
-    # ---------------------------------------------------------
+    # =====================================================
     # 8. EXCAVATION
-    # ---------------------------------------------------------
+    # =====================================================
 
-    excavation_keywords = [
-        "excavation",
-        "excavated area",
-        "trench",
-        "trenching",
-        "open pit",
+    excavation_unsafe = [
+        "without trench protection",
+        "without excavation protection",
+        "without shoring",
+        "without proper shoring",
+        "no trench protection",
+        "no excavation protection",
+        "trench protection not provided",
+        "excavation protection not provided",
         "excavation collapse",
         "trench collapse",
         "cave in",
-        "cave-in"
+        "cave in",
+        "unsafe excavation"
     ]
 
-    if any(keyword in report for keyword in excavation_keywords):
+    if contains(text, excavation_unsafe):
+        return result(
+            "Excavation",
+            "Cave-in / collapse",
+            "Excavation protection or inspection was inadequate",
+            0.88
+        )
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Excavation",
-            "hazard": "Cave-in / collapse",
-            "barrier_failure": "Excavation protection or inspection was inadequate",
-            "confidence": 0.88
-        }
+    # =====================================================
+    # 9. VEHICLE SAFETY
+    # =====================================================
 
-    # ---------------------------------------------------------
-    # 9. VEHICLE / DRIVING
-    # ---------------------------------------------------------
+    vehicle_words = [
+        "vehicle",
+        "truck",
+        "forklift",
+        "heavy vehicle",
+        "mobile equipment"
+    ]
 
-    vehicle_keywords = [
+    vehicle_unsafe = [
         "vehicle collision",
         "vehicle accident",
-        "unsafe driving",
-        "speeding",
-        "driving",
+        "vehicle was reversing",
+        "vehicle is reversing",
+        "vehicle reversing",
         "reversing vehicle",
+        "vehicle was moving",
         "vehicle movement",
+        "reversing in the work area",
+        "unsafe reversing",
+        "reversing without",
+        "without pedestrian control",
+        "without proper pedestrian control",
+        "no pedestrian control",
         "pedestrian struck",
         "vehicle struck worker",
-        "vehicle near miss"
+        "vehicle near miss",
+        "unsafe vehicle movement",
+        "unsafe driving",
+        "speeding",
+        "driving without"
     ]
 
-    if any(keyword in report for keyword in vehicle_keywords):
+    # IMPORTANT:
+    # This catches both:
+    # "reversing vehicle"
+    # and
+    # "vehicle was reversing"
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Vehicle Safety",
-            "hazard": "Vehicle collision / struck-by",
-            "barrier_failure": "Vehicle or pedestrian-control measures were inadequate",
-            "confidence": 0.87
-        }
+    if contains(text, vehicle_words) and contains(text, vehicle_unsafe):
+        return result(
+            "Vehicle Safety",
+            "Vehicle collision / struck-by",
+            "Vehicle or pedestrian-control measures were inadequate",
+            0.87
+        )
 
-    # ---------------------------------------------------------
+    # =====================================================
     # 10. HAZARDOUS ATMOSPHERE
-    # ---------------------------------------------------------
+    # =====================================================
 
-    atmosphere_keywords = [
+    atmosphere_unsafe = [
         "toxic gas",
         "gas leak",
         "gas leakage",
@@ -346,26 +533,59 @@ def analyze_report(report):
         "hazardous atmosphere"
     ]
 
-    if any(keyword in report for keyword in atmosphere_keywords):
+    atmosphere_safe = [
+        "no gas detected",
+        "no gas leak",
+        "no gas leakage",
+        "no toxic gas",
+        "oxygen level is normal",
+        "oxygen level normal",
+        "normal oxygen",
+        "safe atmosphere",
+        "atmosphere is safe"
+    ]
 
-        return {
-            "sif_potential": "YES",
-            "risk_level": "HIGH",
-            "life_saving_rule": "Hazardous Atmosphere",
-            "hazard": "Toxic / flammable atmosphere",
-            "barrier_failure": "Atmospheric monitoring or gas control was inadequate",
-            "confidence": 0.94
-        }
+    if contains(text, atmosphere_unsafe):
 
-    # ---------------------------------------------------------
-    # 11. NO SIF PRECURSOR DETECTED
-    # ---------------------------------------------------------
+        if not contains(text, atmosphere_safe):
+            return result(
+                "Hazardous Atmosphere",
+                "Toxic / flammable atmosphere",
+                "Atmospheric monitoring or gas control was inadequate",
+                0.94
+            )
 
-    return {
-        "sif_potential": "NO",
-        "risk_level": "LOW",
-        "life_saving_rule": "None",
-        "hazard": "General safety hazard",
-        "barrier_failure": "Not identified",
-        "confidence": 0.70
-    }
+    # =====================================================
+    # 11. OTHER CLEARLY UNSAFE CONDITIONS
+    # =====================================================
+
+    generic_high_risk = [
+        "serious injury",
+        "potential fatality",
+        "fatality risk",
+        "life threatening",
+        "life-threatening",
+        "major incident",
+        "critical safety violation"
+    ]
+
+    if contains(text, generic_high_risk):
+        return result(
+            "General Critical Safety",
+            "Potential serious injury / fatality",
+            "Critical safety control failure identified",
+            0.80
+        )
+
+    # =====================================================
+    # 12. SAFE OBSERVATION
+    # =====================================================
+
+    if contains(text, safe_statements):
+        return safe_result()
+
+    # =====================================================
+    # 13. DEFAULT
+    # =====================================================
+
+    return default_result()

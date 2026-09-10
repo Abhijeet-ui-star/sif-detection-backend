@@ -1,11 +1,9 @@
-// Analyze safety report
 async function analyzeSafetyReport() {
 
     const reportInput = document.getElementById("reportInput");
-
     const reportText = reportInput.value.trim();
 
-    // Check empty report
+    // Empty report check
     if (reportText === "") {
         showError("Please enter a safety observation.");
         return;
@@ -13,74 +11,77 @@ async function analyzeSafetyReport() {
 
     try {
 
-        // Call backend API
-        const data = await analyzeReport(reportText);
+        // Show result section
+        document.getElementById("resultSection").style.display = "block";
+        document.getElementById("errorSection").style.display = "none";
 
-        // Check backend response
-        if (!data.success) {
-            showError("Unable to analyze the report.");
-            return;
-        }
+        // Loading
+        document.getElementById("sifPotential").textContent = "Analyzing...";
+        document.getElementById("riskLevel").textContent = "Analyzing...";
+        document.getElementById("lifeSavingRule").textContent = "Analyzing...";
+        document.getElementById("hazard").textContent = "Analyzing...";
+        document.getElementById("barrierFailure").textContent = "Analyzing...";
+        document.getElementById("confidence").textContent = "Analyzing...";
 
-        // Get result from backend
-        const result = data.result;
+        // Call backend through api.js
+        const result = await analyzeReport(reportText);
 
         // Display result
         document.getElementById("sifPotential").textContent =
-            result.sif_potential;
+            result.sif_potential ?? "N/A";
 
         document.getElementById("riskLevel").textContent =
-            result.risk_level;
+            result.risk_level ?? "N/A";
 
         document.getElementById("lifeSavingRule").textContent =
-            result.life_saving_rule;
+            result.life_saving_rule ?? "N/A";
 
         document.getElementById("hazard").textContent =
-            result.hazard;
+            result.hazard ?? "N/A";
 
         document.getElementById("barrierFailure").textContent =
-            result.barrier_failure;
+            result.barrier_failure ?? "N/A";
 
-        document.getElementById("confidence").textContent =
-            (result.confidence * 100) + "%";
-
+        // Confidence
+        if (typeof result.confidence === "number") {
+            document.getElementById("confidence").textContent =
+                Math.round(result.confidence * 100) + "%";
+        } else {
+            document.getElementById("confidence").textContent = "N/A";
+        }
 
         // Show result
         document.getElementById("resultSection").style.display = "block";
 
-        // Hide previous error
-        document.getElementById("errorSection").style.display = "none";
+    } catch (error) {
 
-    }
-
-    catch (error) {
-
-        console.error(error);
+        console.error("Analysis error:", error);
 
         showError(
-            "Unable to connect to backend. Please try again."
+            "Unable to connect to backend. Make sure FastAPI server is running."
         );
     }
 }
 
 
-// Show error message
+// =====================================================
+// SHOW ERROR
+// =====================================================
+
 function showError(message) {
 
-    document.getElementById("errorMessage").textContent =
-        message;
+    document.getElementById("errorMessage").textContent = message;
 
-    document.getElementById("errorSection").style.display =
-        "block";
+    document.getElementById("errorSection").style.display = "block";
 
-    document.getElementById("resultSection").style.display =
-        "none";
+    document.getElementById("resultSection").style.display = "none";
 }
 
 
-// Go back to home page
+// =====================================================
+// GO HOME
+// =====================================================
+
 function goHome() {
-
-    window.location.href = "index.html";
-
+    window.location.href = "./index.html";
 }

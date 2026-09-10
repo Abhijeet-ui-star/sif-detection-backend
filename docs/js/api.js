@@ -2,7 +2,7 @@
 // BACKEND CONNECTION
 // ===============================
 
-const API_URL = "https://sif-detection-backend.onrender.com";
+const API_URL = "http://127.0.0.1:8000";
 
 
 // ===============================

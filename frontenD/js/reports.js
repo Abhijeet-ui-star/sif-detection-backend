@@ -5,14 +5,10 @@ async function loadReports() {
 
     try {
 
-        const data = await getReports();
-
-        if (!data.success) {
-            throw new Error("Unable to load reports");
-        }
+        const reports = await getReports();
 
         // Check if reports exist
-        if (data.reports.length === 0) {
+        if (!Array.isArray(reports) || reports.length === 0) {
 
             container.innerHTML = `
                 <p>No safety reports found.</p>
@@ -25,7 +21,7 @@ async function loadReports() {
         container.innerHTML = "";
 
         // Create cards for each report
-        data.reports.forEach(report => {
+        reports.forEach(report => {
 
             const reportCard = document.createElement("div");
 
@@ -78,10 +74,6 @@ async function loadReports() {
                 <button onclick="viewReportDetails(${report.id})">
                     View Details
                 </button>
-
-                <button onclick="deleteReportFromPage(${report.id})">
-                    Delete Report
-                </button>
             `;
 
             container.appendChild(reportCard);
@@ -107,43 +99,6 @@ function viewReportDetails(reportId) {
 
     window.location.href =
         "report-details.html?id=" + reportId;
-}
-
-
-// Delete report
-async function deleteReportFromPage(reportId) {
-
-    const confirmDelete = confirm(
-        "Are you sure you want to delete this report?"
-    );
-
-    if (!confirmDelete) {
-        return;
-    }
-
-    try {
-
-        const data = await deleteReport(reportId);
-
-        if (data.success) {
-
-            alert("Report deleted successfully.");
-
-            loadReports();
-
-        } else {
-
-            alert("Unable to delete report.");
-
-        }
-
-    } catch (error) {
-
-        console.error("Delete error:", error);
-
-        alert("Backend connection error.");
-
-    }
 }
 
 

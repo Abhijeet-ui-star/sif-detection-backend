@@ -1,206 +1,140 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 
+from database import Base, engine, get_db
+from models import SafetyReport
 from sif_detector import analyze_report
-from database import engine, SessionLocal
-from models import Base, SafetyReport
 
 
-# ==========================================
-# CREATE DATABASE TABLES
-# ==========================================
+# =========================================================
+# DATABASE
+# =========================================================
 
 Base.metadata.create_all(bind=engine)
 
 
-# ==========================================
-# CREATE FASTAPI APPLICATION
-# ==========================================
+# =========================================================
+# FASTAPI APP
+# =========================================================
 
 app = FastAPI(
-    title="OIL SIF Detection API",
-    description="AI/NLP API for detecting SIF precursors",
+    title="OIL SIF Detection Backend",
+    description="Safety Observation and SIF Precursor Detection API",
     version="1.0.0"
 )
 
 
-# ==========================================
-# CORS CONFIGURATION
-# ==========================================
+# =========================================================
+# CORS
+# =========================================================
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# ==========================================
-# REQUEST FORMAT
-# ==========================================
+# =========================================================
+# REQUEST MODEL
+# =========================================================
 
 class ReportRequest(BaseModel):
     report: str
 
 
-# ==========================================
-# DATABASE SESSION
-# ==========================================
-
-def get_db():
-    db = SessionLocal()
-
-    try:
-        yield db
-
-    finally:
-        db.close()
-
-
-# ==========================================
-# HOME API
-# ==========================================
+# =========================================================
+# HOME
+# =========================================================
 
 @app.get("/")
 def home():
-
     return {
-        "message": "OIL SIF Detection API is running"
+        "message": "OIL SIF Detection Backend is running"
     }
 
 
-# ==========================================
-# ANALYZE SAFETY REPORT
-# ==========================================
+# =========================================================
+# HEALTH CHECK
+# =========================================================
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy"
+    }
+
+
+# =========================================================
+# ANALYZE REPORT
+# =========================================================
 
 @app.post("/analyze")
-def analyze(
+def analyze_safety_report(
     data: ReportRequest,
     db: Session = Depends(get_db)
 ):
 
-    # Check empty or very short reports
-    if not data.report or len(data.report.strip()) < 10:
-
+    if not data.report.strip():
         raise HTTPException(
             status_code=400,
-            detail="Invalid report. Please enter a proper safety observation."
+            detail="Report cannot be empty"
         )
 
-    # Safety-related keywords
-    safety_keywords = [
-
-        "worker",
-        "work",
-        "safety",
-        "hazard",
-        "risk",
-        "gas",
-        "oxygen",
-        "fire",
-        "welding",
-        "confined",
-        "height",
-        "electrical",
-        "lifting",
-        "excavation",
-        "vehicle",
-        "lockout",
-        "maintenance",
-        "ppe",
-        "equipment",
-        "incident",
-        "unsafe",
-        "danger"
-
-    ]
-
-    report_lower = data.report.lower()
-
-    # Reject unrelated text
-    if not any(
-        keyword in report_lower
-        for keyword in safety_keywords
-    ):
-
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid safety report. Please enter a safety-related observation."
-        )
-
-    # Analyze report
     result = analyze_report(data.report)
 
-    # Save result to database
     new_report = SafetyReport(
-
         report=data.report,
-
         sif_potential=result["sif_potential"],
-
         risk_level=result["risk_level"],
-
         life_saving_rule=result["life_saving_rule"],
-
         hazard=result["hazard"],
-
         barrier_failure=result["barrier_failure"],
-
         confidence=result["confidence"]
-
     )
 
     db.add(new_report)
-
     db.commit()
-
     db.refresh(new_report)
 
-    # Return result
     return {
-
-        "success": True,
-
-        "result": result,
-
-        "database_id": new_report.id
-
+        "id": new_report.id,
+        "report": new_report.report,
+        "sif_potential": new_report.sif_potential,
+        "risk_level": new_report.risk_level,
+        "life_saving_rule": new_report.life_saving_rule,
+        "hazard": new_report.hazard,
+        "barrier_failure": new_report.barrier_failure,
+        "confidence": new_report.confidence,
+        "created_at": new_report.created_at
     }
 
 
-# ==========================================
+# =========================================================
 # GET ALL REPORTS
-# ==========================================
+# =========================================================
 
 @app.get("/reports")
 def get_reports(
     db: Session = Depends(get_db)
 ):
 
-    reports = db.query(
-        SafetyReport
-    ).order_by(
-        SafetyReport.id.desc()
-    ).all()
+    reports = (
+        db.query(SafetyReport)
+        .order_by(SafetyReport.id.desc())
+        .all()
+    )
 
-    return {
-
-        "success": True,
-
-        "count": len(reports),
-
-        "reports": reports
-
-    }
+    return reports
 
 
-# ==========================================
-# GET ONE REPORT
-# ==========================================
+# =========================================================
+# GET SINGLE REPORT
+# =========================================================
 
 @app.get("/reports/{report_id}")
 def get_report(
@@ -208,160 +142,28 @@ def get_report(
     db: Session = Depends(get_db)
 ):
 
-    report = db.query(
-        SafetyReport
-    ).filter(
-        SafetyReport.id == report_id
-    ).first()
+    report = (
+        db.query(SafetyReport)
+        .filter(SafetyReport.id == report_id)
+        .first()
+    )
 
     if report is None:
-
         raise HTTPException(
             status_code=404,
             detail="Report not found"
         )
 
-    return {
-
-        "success": True,
-
-        "report": report
-
-    }
+    return report
 
 
-# ==========================================
-# GET STATISTICS
-# ==========================================
-
-@app.get("/statistics")
-def get_statistics(
-    db: Session = Depends(get_db)
-):
-
-    reports = db.query(
-        SafetyReport
-    ).all()
-
-    total_reports = len(reports)
-
-    sif_detected = sum(
-
-        1
-
-        for report in reports
-
-        if report.sif_potential == "YES"
-
-    )
-
-    high_risk = sum(
-
-        1
-
-        for report in reports
-
-        if report.risk_level == "HIGH"
-
-    )
-
-    low_risk = sum(
-
-        1
-
-        for report in reports
-
-        if report.risk_level == "LOW"
-
-    )
-
-    return {
-
-        "success": True,
-
-        "statistics": {
-
-            "total_reports": total_reports,
-
-            "sif_detected": sif_detected,
-
-            "high_risk": high_risk,
-
-            "low_risk": low_risk
-
-        }
-
-    }
-
-
-# ==========================================
-# RESTORE REPORT #1
-# TEMPORARY ENDPOINT
-# ==========================================
-
-@app.post("/restore-report-1")
-def restore_report_1(
-    db: Session = Depends(get_db)
-):
-
-    # Check whether Report #1 already exists
-    existing_report = db.query(
-        SafetyReport
-    ).filter(
-        SafetyReport.id == 1
-    ).first()
-
-    if existing_report is not None:
-
-        return {
-
-            "success": False,
-
-            "message": "Report #1 already exists"
-
-        }
-
-    # Create Report #1 with exact ID
-    report_1 = SafetyReport(
-
-        id=1,
-
-        report="Safety observation recorded for demonstration.",
-
-        sif_potential="NO",
-
-        risk_level="LOW",
-
-        life_saving_rule="None",
-
-        hazard="No significant SIF precursor detected",
-
-        barrier_failure="None identified",
-
-        confidence=0.90
-
-    )
-
-    db.add(report_1)
-
-    db.commit()
-
-    db.refresh(report_1)
-
-    return {
-
-        "success": True,
-
-        "message": "Report #1 restored successfully",
-
-        "database_id": report_1.id
-
-    }
-
-
-# ==========================================
+# =========================================================
 # DELETE REPORT
-# ==========================================
+# =========================================================
+# NOTE:
+# This endpoint exists for administrator/backend use.
+# The worker report.html does NOT show a delete button.
+# =========================================================
 
 @app.delete("/reports/{report_id}")
 def delete_report(
@@ -369,71 +171,65 @@ def delete_report(
     db: Session = Depends(get_db)
 ):
 
-    report = db.query(
-        SafetyReport
-    ).filter(
-        SafetyReport.id == report_id
-    ).first()
+    report = (
+        db.query(SafetyReport)
+        .filter(SafetyReport.id == report_id)
+        .first()
+    )
 
     if report is None:
-
         raise HTTPException(
             status_code=404,
             detail="Report not found"
         )
 
     db.delete(report)
-
     db.commit()
 
     return {
-
         "success": True,
-
         "message": "Report deleted successfully",
-
         "deleted_id": report_id
-
     }
 
 
-# ==========================================
-# HEALTH CHECK
-# ==========================================
+# =========================================================
+# STATISTICS
+# =========================================================
 
-@app.get("/health")
-def health_check(
+@app.get("/statistics")
+def get_statistics(
     db: Session = Depends(get_db)
 ):
 
-    try:
+    reports = db.query(SafetyReport).all()
 
-        db.query(
-            SafetyReport
-        ).count()
+    total_reports = len(reports)
 
-        return {
+    sif_reports = sum(
+        1 for report in reports
+        if report.sif_potential == "YES"
+    )
 
-            "success": True,
+    high_risk = sum(
+        1 for report in reports
+        if report.risk_level == "HIGH"
+    )
 
-            "status": "healthy",
+    medium_risk = sum(
+        1 for report in reports
+        if report.risk_level == "MEDIUM"
+    )
 
-            "database": "connected",
+    low_risk = sum(
+        1 for report in reports
+        if report.risk_level == "LOW"
+    )
 
-            "message": "Backend is running successfully"
-
-        }
-
-    except Exception:
-
-        return {
-
-            "success": False,
-
-            "status": "unhealthy",
-
-            "database": "error",
-
-            "message": "Database connection failed"
-
-        }
+    return {
+        "total_reports": total_reports,
+        "sif_reports": sif_reports,
+        "high_risk": high_risk,
+        "medium_risk": medium_risk,
+        "low_risk": low_risk
+    }
