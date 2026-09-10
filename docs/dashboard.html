@@ -1,97 +1,203 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Dashboard - OIL SIF Detection</title>
 
-    <title>Dashboard - OIL SIF Detection</title>
+<link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="css/style.css">
-</head>
+</head><body><header>
 
-<body>
+    <h1>OIL SAFETY DASHBOARD</h1>
 
-    <header>
-        <h1>OIL SAFETY DASHBOARD</h1>
-        <p>Serious Injury & Fatality Detection System</p>
-    </header>
+    <p>
+        Serious Injury & Fatality Detection System
+    </p>
 
-
-    <main>
-
-        <!-- Dashboard Cards -->
-        <section class="features">
-
-            <div class="feature-card">
-                <h3>Total Reports</h3>
-                <p id="totalReports">Loading...</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>SIF Detected</h3>
-                <p id="sifDetected">Loading...</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>High Risk</h3>
-                <p id="highRisk">Loading...</p>
-            </div>
-
-            <div class="feature-card">
-                <h3>Low Risk</h3>
-                <p id="lowRisk">Loading...</p>
-            </div>
-
-        </section>
+</header>
 
 
-        <!-- Navigation -->
-        <section class="welcome" style="margin-top: 30px;">
+<main>
 
-            <h2>Safety Management</h2>
+    <!-- Dashboard Introduction -->
+    <section class="welcome">
 
-            <p>
-                Manage safety observations, analyze new reports
-                and view safety statistics.
+        <h2>Safety Monitoring Dashboard</h2>
+
+        <p>
+            Monitor analyzed safety observations, identify
+            potential SIF cases, and review current risk levels.
+        </p>
+
+    </section>
+
+
+    <!-- Safety Overview -->
+    <section class="features">
+
+        <div class="feature-card">
+
+            <h3>📋 Total Reports</h3>
+
+            <p
+                id="totalReports"
+                style="
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: #167d7f;
+                ">
+                Loading...
             </p>
 
-            <button onclick="window.location.href='analyze.html'">
-                Analyze New Report
+            <p>
+                Total safety observations analyzed
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <h3>🛡️ SIF Detected</h3>
+
+            <p
+                id="sifDetected"
+                style="
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: #c62828;
+                ">
+                Loading...
+            </p>
+
+            <p>
+                Reports identified as potential SIF
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <h3>🔴 High Risk</h3>
+
+            <p
+                id="highRisk"
+                style="
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: #c62828;
+                ">
+                Loading...
+            </p>
+
+            <p>
+                Observations requiring attention
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <h3>🟢 Low Risk</h3>
+
+            <p
+                id="lowRisk"
+                style="
+                    font-size: 32px;
+                    font-weight: bold;
+                    color: #2e7d32;
+                ">
+                Loading...
+            </p>
+
+            <p>
+                Lower-risk safety observations
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- Safety Management -->
+    <section
+        class="welcome"
+        style="margin-top: 30px;">
+
+        <h2>Safety Management</h2>
+
+        <p>
+            Use the options below to analyze new observations,
+            review report history, or examine detailed safety
+            statistics.
+        </p>
+
+
+        <div>
+
+            <button
+                onclick="window.location.href='analyze.html'">
+                🔎 Analyze New Report
             </button>
 
-            <button onclick="window.location.href='reports.html'">
-                View Reports
+
+            <button
+                onclick="window.location.href='reports.html'">
+                📋 View Reports
             </button>
 
-            <button onclick="window.location.href='statistics.html'">
-                View Statistics
+
+            <button
+                onclick="window.location.href='statistics.html'">
+                📊 View Statistics
             </button>
 
-            <button onclick="window.location.href='index.html'">
-                Back to Home
+
+            <button
+                onclick="window.location.href='index.html'">
+                🏠 Back to Home
             </button>
 
-        </section>
+        </div>
 
-    </main>
-
-
-    <footer>
-
-        <p>OIL SIF Detection System</p>
-
-        <p>Backend powered by FastAPI</p>
-
-    </footer>
+    </section>
 
 
-    <!-- Backend API -->
-    <script src="js/api.js"></script>
+    <!-- Dashboard Information -->
+    <section
+        class="welcome"
+        style="margin-top: 30px;">
 
-    <!-- Dashboard JavaScript -->
-    <script src="js/dashboard.js"></script>
+        <h2>Safety Intelligence</h2>
 
-</body>
+        <p>
+            The dashboard provides a quick overview of safety
+            performance based on reports analyzed by the
+            OIL SIF Detection System.
+        </p>
 
-</html>
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>
+        OIL SIF Detection System
+    </p>
+
+    <p>
+        Backend powered by FastAPI
+    </p>
+
+</footer>
+
+
+<!-- Backend API -->
+<script src="js/api.js"></script>
+
+<!-- Dashboard JavaScript -->
+<script src="js/dashboard.js"></script>
+
+</body></html>
