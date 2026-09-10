@@ -1,114 +1,604 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Safety Reports - OIL SIF Detection</title>
 
-<link rel="stylesheet" href="css/style.css">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-</head><body><header>
+    <title>Safety Reports - OIL SIF Detection</title>
 
-    <h1>SAFETY REPORTS</h1>
+    <link
+        rel="stylesheet"
+        href="css/style.css">
 
-    <p>
-        OIL SIF Detection System
-    </p>
+    <style>
 
-</header>
+        /* Search and Filters */
+
+        .report-controls {
+            background: white;
+            padding: 25px;
+            margin-top: 25px;
+            border-radius: 14px;
+            border: 1px solid #e2e8eb;
+            box-shadow: 0 5px 16px rgba(18, 52, 59, 0.08);
+        }
+
+        .report-controls input,
+        .report-controls select {
+            width: 100%;
+            padding: 13px 15px;
+            margin: 7px 0;
+            border: 1px solid #cbd5da;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            background: #fafdfe;
+        }
+
+        .report-controls input:focus,
+        .report-controls select:focus {
+            outline: none;
+            border-color: #167d7f;
+            box-shadow: 0 0 0 3px rgba(22, 125, 127, 0.12);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .report-count {
+            margin-top: 15px;
+            color: #52616b;
+            font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #52616b;
+        }
+
+        @media (max-width: 700px) {
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
 
 
-<main>
+<body>
 
-    <!-- Reports Introduction -->
-    <section class="welcome">
+    <header>
 
-        <h2>Safety Report History</h2>
+        <h1>SAFETY REPORTS</h1>
 
         <p>
-            Review previously analyzed safety observations,
-            SIF potential, risk levels, hazards, barrier failures,
-            and analysis confidence.
+            OIL SIF Detection System
         </p>
 
-    </section>
+    </header>
 
 
-    <!-- Reports -->
-    <section
-        class="welcome"
-        style="margin-top: 30px;">
+    <main>
 
-        <h2>Analyzed Reports</h2>
+        <!-- Reports Introduction -->
 
-        <p>
-            Reports are displayed with the most recently
-            analyzed observation first.
-        </p>
+        <section class="welcome">
 
-
-        <div id="reportsContainer">
+            <h2>Safety Report History</h2>
 
             <p>
-                Loading reports...
+                Review previously analyzed safety observations,
+                SIF potential, risk levels, hazards, barrier failures,
+                and analysis confidence.
             </p>
 
-        </div>
-
-    </section>
+        </section>
 
 
-    <!-- Navigation -->
-    <section
-        class="welcome"
-        style="margin-top: 30px;">
+        <!-- Search and Filters -->
 
-        <h2>Report Management</h2>
+        <section class="welcome" style="margin-top: 30px;">
+
+            <h2>🔍 Search & Filter Reports</h2>
+
+            <p>
+                Search reports by observation text and filter
+                results by SIF status or risk level.
+            </p>
+
+
+            <div class="report-controls">
+
+                <div class="filter-grid">
+
+                    <!-- Search -->
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search safety observations...">
+
+
+                    <!-- SIF Filter -->
+
+                    <select id="sifFilter">
+
+                        <option value="ALL">
+                            All SIF Status
+                        </option>
+
+                        <option value="YES">
+                            SIF Detected
+                        </option>
+
+                        <option value="NO">
+                            No SIF
+                        </option>
+
+                    </select>
+
+
+                    <!-- Risk Filter -->
+
+                    <select id="riskFilter">
+
+                        <option value="ALL">
+                            All Risk Levels
+                        </option>
+
+                        <option value="HIGH">
+                            High Risk
+                        </option>
+
+                        <option value="MEDIUM">
+                            Medium Risk
+                        </option>
+
+                        <option value="LOW">
+                            Low Risk
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <p
+                    id="reportCount"
+                    class="report-count">
+                    Loading reports...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Reports -->
+
+        <section
+            class="welcome"
+            style="margin-top: 30px;">
+
+            <h2>Analyzed Reports</h2>
+
+            <p>
+                Reports are displayed with the most recently
+                analyzed observation first.
+            </p>
+
+
+            <div id="reportsContainer">
+
+                <p>
+                    Loading reports...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Navigation -->
+
+        <section
+            class="welcome"
+            style="margin-top: 30px;">
+
+            <h2>Report Management</h2>
+
+            <p>
+                Analyze a new safety observation or return to
+                the dashboard and home page.
+            </p>
+
+
+            <div>
+
+                <button
+                    onclick="window.location.href='analyze.html'">
+                    🔎 Analyze New Report
+                </button>
+
+
+                <button
+                    onclick="window.location.href='dashboard.html'">
+                    📊 Back to Dashboard
+                </button>
+
+
+                <button
+                    onclick="window.location.href='index.html'">
+                    🏠 Home
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
 
         <p>
-            Analyze a new safety observation or return to
-            the dashboard and home page.
+            OIL SIF Detection System
         </p>
 
+        <p>
+            Backend powered by FastAPI
+        </p>
 
-        <div>
-
-            <button
-                onclick="window.location.href='analyze.html'">
-                🔎 Analyze New Report
-            </button>
+    </footer>
 
 
-            <button
-                onclick="window.location.href='dashboard.html'">
-                📊 Back to Dashboard
-            </button>
+    <script src="js/api.js"></script>
+
+    <script src="js/reports.js"></script>
 
 
-            <button
-                onclick="window.location.href='index.html'">
-                🏠 Home
-            </button>
+    <!-- Search & Filter Logic -->
 
-        </div>
+    <script>
 
-    </section>
-
-</main>
+        let allReports = [];
 
 
-<footer>
+        async function initializeFilters() {
 
-    <p>
-        OIL SIF Detection System
-    </p>
+            try {
 
-    <p>
-        Backend powered by FastAPI
-    </p>
+                allReports =
+                    await getReports();
 
-</footer>
+                if (!Array.isArray(allReports)) {
+
+                    throw new Error(
+                        "Invalid reports data."
+                    );
+
+                }
+
+                applyFilters();
+
+            } catch (error) {
+
+                console.error(
+                    "Filter initialization error:",
+                    error
+                );
+
+                document.getElementById("reportCount")
+                    .textContent =
+                    "Unable to load reports.";
+
+            }
+
+        }
 
 
-<script src="js/api.js"></script>
+        function applyFilters() {
 
-<script src="js/reports.js"></script>
+            const searchText =
+                document.getElementById("searchInput")
+                    .value
+                    .toLowerCase()
+                    .trim();
 
-</body></html>
+
+            const sifFilter =
+                document.getElementById("sifFilter")
+                    .value;
+
+
+            const riskFilter =
+                document.getElementById("riskFilter")
+                    .value;
+
+
+            const filteredReports =
+                allReports.filter(report => {
+
+                    const observation =
+                        (
+                            report.report ?? ""
+                        ).toLowerCase();
+
+
+                    const matchesSearch =
+                        observation.includes(
+                            searchText
+                        );
+
+
+                    const matchesSif =
+                        sifFilter === "ALL" ||
+                        report.sif_potential === sifFilter;
+
+
+                    const matchesRisk =
+                        riskFilter === "ALL" ||
+                        report.risk_level === riskFilter;
+
+
+                    return (
+                        matchesSearch &&
+                        matchesSif &&
+                        matchesRisk
+                    );
+
+                });
+
+
+            displayFilteredReports(
+                filteredReports
+            );
+
+        }
+
+
+        function displayFilteredReports(
+            reports
+        ) {
+
+            const container =
+                document.getElementById(
+                    "reportsContainer"
+                );
+
+
+            const count =
+                document.getElementById(
+                    "reportCount"
+                );
+
+
+            count.textContent =
+                `Showing ${reports.length} of ${allReports.length} reports`;
+
+
+            if (reports.length === 0) {
+
+                container.innerHTML = `
+
+                    <div class="no-results">
+
+                        <h3>
+                            No Reports Found
+                        </h3>
+
+                        <p>
+                            Try changing your search
+                            or filter options.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            container.innerHTML = "";
+
+
+            reports.forEach(report => {
+
+                const reportCard =
+                    document.createElement("div");
+
+
+                reportCard.className =
+                    "feature-card";
+
+
+                reportCard.style.marginTop =
+                    "20px";
+
+
+                const confidence =
+                    typeof report.confidence === "number"
+                        ? Math.round(
+                            report.confidence * 100
+                        ) + "%"
+                        : "N/A";
+
+
+                let sifStatus =
+                    report.sif_potential ?? "N/A";
+
+
+                if (
+                    report.sif_potential === "YES"
+                ) {
+
+                    sifStatus =
+                        "🔴 YES - SIF";
+
+                } else if (
+                    report.sif_potential === "NO"
+                ) {
+
+                    sifStatus =
+                        "🟢 NO - SIF";
+
+                }
+
+
+                let riskStatus =
+                    report.risk_level ?? "N/A";
+
+
+                if (
+                    report.risk_level === "HIGH"
+                ) {
+
+                    riskStatus =
+                        "🔴 HIGH";
+
+                } else if (
+                    report.risk_level === "MEDIUM"
+                ) {
+
+                    riskStatus =
+                        "🟠 MEDIUM";
+
+                } else if (
+                    report.risk_level === "LOW"
+                ) {
+
+                    riskStatus =
+                        "🟢 LOW";
+
+                }
+
+
+                reportCard.innerHTML = `
+
+                    <h3>
+                        Report #${report.id}
+                    </h3>
+
+                    <p>
+                        <strong>
+                            SIF Potential:
+                        </strong>
+                        ${sifStatus}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Risk Level:
+                        </strong>
+                        ${riskStatus}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Observation:
+                        </strong>
+                        <br>
+                        ${report.report ?? "N/A"}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Life Saving Rule:
+                        </strong>
+                        ${report.life_saving_rule ?? "N/A"}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Hazard:
+                        </strong>
+                        ${report.hazard ?? "N/A"}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Barrier Failure:
+                        </strong>
+                        ${report.barrier_failure ?? "N/A"}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Confidence:
+                        </strong>
+                        ${confidence}
+                    </p>
+
+                    <p>
+                        <strong>
+                            Date:
+                        </strong>
+                        ${report.created_at ?? "N/A"}
+                    </p>
+
+                    <button
+                        onclick="
+                            viewReportDetails(${report.id})
+                        ">
+                        View Details
+                    </button>
+
+                `;
+
+
+                container.appendChild(
+                    reportCard
+                );
+
+            });
+
+        }
+
+
+        document.getElementById(
+            "searchInput"
+        ).addEventListener(
+            "input",
+            applyFilters
+        );
+
+
+        document.getElementById(
+            "sifFilter"
+        ).addEventListener(
+            "change",
+            applyFilters
+        );
+
+
+        document.getElementById(
+            "riskFilter"
+        ).addEventListener(
+            "change",
+            applyFilters
+        );
+
+
+        initializeFilters();
+
+    </script>
+
+</body>
+
+</html>
