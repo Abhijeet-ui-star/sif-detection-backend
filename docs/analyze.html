@@ -1,154 +1,149 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Analyze Safety Report - OIL SIF Detection</title>
 
-    <title>Analyze Safety Report - OIL SIF Detection</title>
+<link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="css/style.css">
-</head>
+</head><body><header>
+    <h1>SAFETY REPORT ANALYSIS</h1>
 
-<body>
-
-    <header>
-        <h1>SAFETY REPORT ANALYSIS</h1>
-        <p>OIL SIF Detection System</p>
-    </header>
-
-    <main>
-
-        <!-- Input Section -->
-        <section class="welcome">
-
-            <h2>Enter Safety Observation</h2>
-
-            <p>
-                Describe the safety observation or incident below.
-                The system will analyze it for potential SIF precursors.
-            </p>
-
-            <textarea
-                id="reportInput"
-                placeholder="Example: Worker entered a confined space. Oxygen level is low and toxic gas is detected."
-                rows="7"></textarea>
-
-            <br>
-
-            <button onclick="analyzeSafetyReport()">
-                Analyze Report
-            </button>
-
-            <button onclick="window.location.href='index.html'">
-                Back to Home
-            </button>
-
-        </section>
+    <p>
+        OIL SIF Detection System
+    </p>
+</header>
 
 
-        <!-- Result Section -->
-        <section
-            id="resultSection"
-            class="welcome"
-            style="display: none; margin-top: 30px;">
+<main>
 
-            <h2>Analysis Result</h2>
+    <!-- Analysis Input -->
+    <section class="welcome">
 
-            <div class="feature-card">
+        <h2>Analyze Safety Observation</h2>
 
-                <h3>SIF Potential</h3>
+        <p>
+            Enter a safety observation below. The system will
+            analyze the observation for potential Serious Injury
+            and Fatality (SIF) precursors, risk level, hazards,
+            and critical barrier failures.
+        </p>
 
-                <p id="sifPotential">-</p>
+        <textarea
+            id="reportInput"
+            placeholder="Example: A vehicle was reversing in the work area without pedestrian control."
+            rows="8"></textarea>
 
-            </div>
+        <br>
 
+        <button onclick="analyzeSafetyReport()">
+            Analyze Report
+        </button>
 
-            <div class="feature-card">
+        <button onclick="window.location.href='index.html'">
+            Back to Home
+        </button>
 
-                <h3>Risk Level</h3>
-
-                <p id="riskLevel">-</p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>Life Saving Rule</h3>
-
-                <p id="lifeSavingRule">-</p>
-
-            </div>
+    </section>
 
 
-            <div class="feature-card">
+    <!-- Analysis Result -->
+    <section
+        id="resultSection"
+        class="welcome"
+        style="display: none; margin-top: 30px;">
 
-                <h3>Hazard</h3>
+        <h2>Analysis Result</h2>
 
-                <p id="hazard">-</p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>Barrier Failure</h3>
-
-                <p id="barrierFailure">-</p>
-
-            </div>
+        <div class="feature-card">
+            <h3>🛡️ SIF Potential</h3>
+            <p id="sifPotential">-</p>
+        </div>
 
 
-            <div class="feature-card">
+        <div class="feature-card">
+            <h3>⚠️ Risk Level</h3>
+            <p id="riskLevel">-</p>
+        </div>
 
-                <h3>Confidence</h3>
 
-                <p id="confidence">-</p>
+        <div class="feature-card">
+            <h3>📋 Life Saving Rule</h3>
+            <p id="lifeSavingRule">-</p>
+        </div>
+
+
+        <div class="feature-card">
+            <h3>🔎 Hazard</h3>
+            <p id="hazard">-</p>
+        </div>
+
+
+        <div class="feature-card">
+            <h3>🧱 Barrier Failure</h3>
+            <p id="barrierFailure">-</p>
+        </div>
+
+
+        <div class="feature-card">
+
+            <h3>📊 Confidence</h3>
+
+            <p id="confidence">-</p>
+
+            <div
+                id="confidenceBarContainer"
+                style="
+                    width: 100%;
+                    height: 12px;
+                    background: #e5e5e5;
+                    border-radius: 10px;
+                    overflow: hidden;
+                ">
 
                 <div
-                    id="confidenceBarContainer"
-                    style="width: 100%; height: 12px; background: #e5e5e5; border-radius: 10px; overflow: hidden;">
-
-                    <div
-                        id="confidenceBar"
-                        style="width: 0%; height: 100%; transition: width 0.5s;">
-                    </div>
-
+                    id="confidenceBar"
+                    style="
+                        width: 0%;
+                        height: 100%;
+                        transition: width 0.5s;
+                    ">
                 </div>
 
             </div>
 
-        </section>
+        </div>
+
+    </section>
 
 
-        <!-- Error Section -->
-        <section
-            id="errorSection"
-            class="welcome"
-            style="display: none; margin-top: 30px;">
+    <!-- Error -->
+    <section
+        id="errorSection"
+        class="welcome"
+        style="display: none; margin-top: 30px;">
 
-            <h2>Error</h2>
+        <h2>⚠️ Analysis Error</h2>
 
-            <p id="errorMessage"></p>
+        <p id="errorMessage"></p>
 
-        </section>
+    </section>
 
-    </main>
-
-
-    <footer>
-
-        <p>OIL SIF Detection System</p>
-
-        <p>Backend powered by FastAPI</p>
-
-    </footer>
+</main>
 
 
-    <script src="js/api.js"></script>
-    <script src="js/analyze.js"></script>
+<footer>
 
-</body>
+    <p>
+        OIL SIF Detection System
+    </p>
 
-</html>
+    <p>
+        Backend powered by FastAPI
+    </p>
+
+</footer>
+
+
+<script src="js/api.js"></script>
+<script src="js/analyze.js"></script>
+
+</body></html>
