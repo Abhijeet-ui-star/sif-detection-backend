@@ -1,3 +1,4 @@
+
 // Load safety statistics
 
 async function loadStatistics() {
