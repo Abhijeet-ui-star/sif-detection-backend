@@ -1,43 +1,86 @@
 // Load safety statistics
+
 async function loadStatistics() {
 
     try {
 
-        // Get statistics from backend
-        const data = await getStatistics();
+        console.log("Loading statistics...");
 
-        if (!data.success) {
-            throw new Error("Unable to load statistics");
+        // Get statistics from backend
+        const statistics = await getStatistics();
+
+        console.log(
+            "STATISTICS RESPONSE:",
+            statistics
+        );
+
+
+        // Check backend response
+
+        if (!statistics) {
+
+            throw new Error(
+                "No statistics received from backend."
+            );
+
         }
 
-        const statistics = data.statistics;
 
-        // Display statistics
-        document.getElementById("totalReports").textContent =
-            statistics.total_reports;
+        // Display Total Reports
 
-        document.getElementById("sifDetected").textContent =
-            statistics.sif_detected;
+        document.getElementById("totalReports")
+            .textContent =
+            statistics.total_reports ?? 0;
 
-        document.getElementById("highRisk").textContent =
-            statistics.high_risk;
 
-        document.getElementById("lowRisk").textContent =
-            statistics.low_risk;
+        // Display SIF Detected
+
+        document.getElementById("sifDetected")
+            .textContent =
+            statistics.sif_reports ?? 0;
+
+
+        // Display High Risk
+
+        document.getElementById("highRisk")
+            .textContent =
+            statistics.high_risk ?? 0;
+
+
+        // Display Low Risk
+
+        document.getElementById("lowRisk")
+            .textContent =
+            statistics.low_risk ?? 0;
+
 
     }
 
     catch (error) {
 
-        console.error("Statistics error:", error);
+        console.error(
+            "Statistics error:",
+            error
+        );
 
-        document.getElementById("totalReports").textContent = "Error";
-        document.getElementById("sifDetected").textContent = "Error";
-        document.getElementById("highRisk").textContent = "Error";
-        document.getElementById("lowRisk").textContent = "Error";
+
+        document.getElementById("totalReports")
+            .textContent = "Error";
+
+        document.getElementById("sifDetected")
+            .textContent = "Error";
+
+        document.getElementById("highRisk")
+            .textContent = "Error";
+
+        document.getElementById("lowRisk")
+            .textContent = "Error";
+
     }
+
 }
 
 
-// Run when page loads
+// Load statistics when page opens
+
 loadStatistics();
