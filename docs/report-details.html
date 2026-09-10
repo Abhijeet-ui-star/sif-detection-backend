@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,7 +17,6 @@
         <h1>REPORT DETAILS</h1>
         <p>OIL SIF Detection System</p>
     </header>
-
 
     <main>
 
@@ -44,7 +44,6 @@
 
     </main>
 
-
     <footer>
 
         <p>OIL SIF Detection System</p>
@@ -52,7 +51,6 @@
         <p>Backend powered by FastAPI</p>
 
     </footer>
-
 
     <script src="js/api.js"></script>
 
@@ -70,6 +68,8 @@
             const reportId =
                 urlParams.get("id");
 
+            console.log("REPORT ID:", reportId);
+
 
             // Check ID
             if (!reportId) {
@@ -84,12 +84,18 @@
 
             try {
 
-                // Get report from backend
-                const data =
+                // Get report directly from backend
+                const report =
                     await getReport(reportId);
 
+                console.log(
+                    "REPORT DETAILS RESPONSE:",
+                    report
+                );
 
-                if (!data.success) {
+
+                // Check backend response
+                if (!report || !report.id) {
 
                     container.innerHTML = `
                         <p>Report not found.</p>
@@ -99,7 +105,11 @@
                 }
 
 
-                const report = data.report;
+                // Confidence
+                const confidence =
+                    typeof report.confidence === "number"
+                        ? Math.round(report.confidence * 100) + "%"
+                        : "N/A";
 
 
                 // Display report
@@ -107,46 +117,65 @@
 
                     <div class="feature-card">
 
-                        <h3>Report #${report.id}</h3>
+                        <h3>
+                            Report #${report.id}
+                        </h3>
 
                         <p>
-                            <strong>Observation:</strong><br>
-                            ${report.report}
+                            <strong>
+                                Observation:
+                            </strong>
+                            <br>
+                            ${report.report ?? "N/A"}
                         </p>
 
                         <p>
-                            <strong>SIF Potential:</strong>
-                            ${report.sif_potential}
+                            <strong>
+                                SIF Potential:
+                            </strong>
+                            ${report.sif_potential ?? "N/A"}
                         </p>
 
                         <p>
-                            <strong>Risk Level:</strong>
-                            ${report.risk_level}
+                            <strong>
+                                Risk Level:
+                            </strong>
+                            ${report.risk_level ?? "N/A"}
                         </p>
 
                         <p>
-                            <strong>Life Saving Rule:</strong>
-                            ${report.life_saving_rule}
+                            <strong>
+                                Life Saving Rule:
+                            </strong>
+                            ${report.life_saving_rule ?? "N/A"}
                         </p>
 
                         <p>
-                            <strong>Hazard:</strong>
-                            ${report.hazard}
+                            <strong>
+                                Hazard:
+                            </strong>
+                            ${report.hazard ?? "N/A"}
                         </p>
 
                         <p>
-                            <strong>Barrier Failure:</strong>
-                            ${report.barrier_failure}
+                            <strong>
+                                Barrier Failure:
+                            </strong>
+                            ${report.barrier_failure ?? "N/A"}
                         </p>
 
                         <p>
-                            <strong>Confidence:</strong>
-                            ${(report.confidence * 100).toFixed(0)}%
+                            <strong>
+                                Confidence:
+                            </strong>
+                            ${confidence}
                         </p>
 
                         <p>
-                            <strong>Created At:</strong>
-                            ${report.created_at}
+                            <strong>
+                                Created At:
+                            </strong>
+                            ${report.created_at ?? "N/A"}
                         </p>
 
                     </div>
@@ -157,7 +186,10 @@
 
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    "Report details error:",
+                    error
+                );
 
                 container.innerHTML = `
                     <p>
