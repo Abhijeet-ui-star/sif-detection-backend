@@ -1,753 +1,522 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
 
-<head>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
 
-    <meta charset="UTF-8">
+<title>Safety Statistics - OIL SIF Detection</title>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+<link
+    rel="stylesheet"
+    href="css/style.css">
 
-    <title>Safety Statistics - OIL SIF Detection</title>
+<style>
 
-    <link
-        rel="stylesheet"
-        href="css/style.css">
+    .rate-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-top: 25px;
+    }
 
-    <style>
+    .rate-card {
+        background: white;
+        padding: 28px 20px;
+        border-radius: 14px;
+        border: 1px solid #e2e8eb;
+        box-shadow: 0 5px 16px rgba(18, 52, 59, 0.08);
+        text-align: center;
+    }
 
-        /* Statistics Summary */
+    .rate-card h3 {
+        color: #12343b;
+        margin-bottom: 12px;
+        font-size: 18px;
+    }
 
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-top: 30px;
+    .rate-value {
+        font-size: 30px;
+        font-weight: 700;
+        color: #167d7f;
+    }
+
+    .distribution {
+        margin-top: 30px;
+    }
+
+    .bar-row {
+        margin: 22px 0;
+    }
+
+    .bar-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 7px;
+        font-weight: 600;
+        color: #334e58;
+    }
+
+    .bar-container {
+        width: 100%;
+        height: 16px;
+        background: #e5ecee;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(
+            90deg,
+            #167d7f,
+            #24a6a8
+        );
+        border-radius: 10px;
+        transition: width 0.6s ease;
+    }
+
+    @media (max-width: 800px) {
+
+        .rate-grid {
+            grid-template-columns: repeat(2, 1fr);
         }
 
-        .summary-card {
-            background: white;
-            padding: 24px 18px;
-            border-radius: 14px;
-            border: 1px solid #e2e8eb;
-            box-shadow: 0 5px 16px rgba(18, 52, 59, 0.08);
-            text-align: center;
+    }
+
+    @media (max-width: 500px) {
+
+        .rate-grid {
+            grid-template-columns: 1fr;
         }
 
-        .summary-card h3 {
-            color: #12343b;
-            font-size: 17px;
-            margin-bottom: 10px;
-        }
+    }
 
-        .summary-number {
-            font-size: 30px;
-            font-weight: bold;
-            color: #167d7f;
-        }
+</style>
 
-        .summary-percent {
-            margin-top: 5px;
-            color: #52616b;
-            font-size: 14px;
-        }
+</head><body><header>
 
+    <h1>SAFETY STATISTICS</h1>
 
-        /* Chart */
+    <p>
+        OIL SIF Detection System
+    </p>
 
-        .chart-box {
-            background: white;
-            padding: 35px 30px;
-            margin-top: 30px;
-            border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(18, 52, 59, 0.10);
-            border: 1px solid #e2e8eb;
-        }
+</header>
 
-        .chart-box h2 {
-            color: #12343b;
-            margin-bottom: 8px;
-        }
+<main>
 
-        .chart-note {
-            margin-bottom: 25px;
-            color: #52616b;
-        }
+    <!-- Introduction -->
 
-        .bar-container {
-            margin: 28px 0;
-        }
+    <section class="welcome">
 
-        .bar-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 9px;
-            font-weight: 600;
-            color: #334e5a;
-        }
-
-        .bar-background {
-            width: 100%;
-            height: 28px;
-            background: #e8edef;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .bar {
-            height: 100%;
-            width: 0%;
-            border-radius: 20px;
-            transition: width 0.8s ease;
-        }
-
-        .sif-bar {
-            background: #dc2626;
-        }
-
-        .high-bar {
-            background: #f59e0b;
-        }
-
-        .medium-bar {
-            background: #f97316;
-        }
-
-        .low-bar {
-            background: #16a34a;
-        }
-
-
-        /* Main Statistics Values */
-
-        .statistics-value {
-            font-size: 32px !important;
-            font-weight: bold;
-            margin-bottom: 8px !important;
-        }
-
-        .total-value {
-            color: #167d7f !important;
-        }
-
-        .sif-value,
-        .high-value {
-            color: #c62828 !important;
-        }
-
-        .medium-value {
-            color: #ea580c !important;
-        }
-
-        .low-value {
-            color: #2e7d32 !important;
-        }
-
-
-        /* Performance Message */
-
-        .performance-box {
-            background: white;
-            padding: 30px;
-            margin-top: 30px;
-            border-radius: 16px;
-            border: 1px solid #e2e8eb;
-            box-shadow: 0 6px 20px rgba(18, 52, 59, 0.10);
-            text-align: center;
-        }
-
-        .performance-box h2 {
-            color: #12343b;
-            margin-bottom: 12px;
-        }
-
-        .performance-box p {
-            color: #52616b;
-            max-width: 800px;
-            margin: auto;
-        }
-
-
-        /* Mobile */
-
-        @media (max-width: 800px) {
-
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-        }
-
-        @media (max-width: 500px) {
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .chart-box {
-                padding: 25px 18px;
-            }
-
-        }
-
-    </style>
-
-</head>
-
-
-<body>
-
-    <header>
-
-        <h1>SAFETY STATISTICS</h1>
+        <h2>Safety Analytics & Insights</h2>
 
         <p>
-            OIL SIF Detection System
+            Review detailed safety performance indicators,
+            risk rates, and the distribution of identified
+            safety risks across analyzed observations.
         </p>
 
-    </header>
+    </section>
 
 
-    <main>
+    <!-- Rate Summary -->
 
-        <!-- Introduction -->
+    <section
+        class="welcome"
+        style="margin-top: 30px;">
 
-        <section class="welcome">
-
-            <h2>Safety Performance Overview</h2>
-
-            <p>
-                Monitor the overall safety performance of analyzed
-                observations, including SIF detections and risk
-                classifications.
-            </p>
-
-        </section>
-
-
-        <!-- Main Statistics -->
-
-        <section class="features">
-
-            <div class="feature-card">
-
-                <h3>📋 Total Reports</h3>
-
-                <p
-                    id="totalReports"
-                    class="statistics-value total-value">
-                    Loading...
-                </p>
-
-                <p>
-                    Total safety observations analyzed
-                </p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>🛡️ SIF Detected</h3>
-
-                <p
-                    id="sifDetected"
-                    class="statistics-value sif-value">
-                    Loading...
-                </p>
-
-                <p>
-                    Potential SIF precursor reports
-                </p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>🔴 High Risk</h3>
-
-                <p
-                    id="highRisk"
-                    class="statistics-value high-value">
-                    Loading...
-                </p>
-
-                <p>
-                    Reports requiring immediate attention
-                </p>
-
-            </div>
-
-
-            <div class="feature-card">
-
-                <h3>🟢 Low Risk</h3>
-
-                <p
-                    id="lowRisk"
-                    class="statistics-value low-value">
-                    Lower-risk safety observations
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <!-- Summary -->
-
-        <section>
-
-            <div class="summary-grid">
-
-                <div class="summary-card">
-
-                    <h3>SIF Rate</h3>
-
-                    <div
-                        id="sifPercent"
-                        class="summary-number">
-                        0%
-                    </div>
-
-                    <div class="summary-percent">
-                        Of total reports
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>High Risk Rate</h3>
-
-                    <div
-                        id="highPercent"
-                        class="summary-number">
-                        0%
-                    </div>
-
-                    <div class="summary-percent">
-                        Of total reports
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Medium Risk Rate</h3>
-
-                    <div
-                        id="mediumPercent"
-                        class="summary-number">
-                        0%
-                    </div>
-
-                    <div class="summary-percent">
-                        Of total reports
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Low Risk Rate</h3>
-
-                    <div
-                        id="lowPercent"
-                        class="summary-number">
-                        0%
-                    </div>
-
-                    <div class="summary-percent">
-                        Of total reports
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- Risk Chart -->
-
-        <section class="chart-box">
-
-            <h2>📊 Safety Risk Distribution</h2>
-
-            <p class="chart-note">
-                Percentage of analyzed reports within each
-                safety classification.
-            </p>
-
-
-            <!-- SIF -->
-
-            <div class="bar-container">
-
-                <div class="bar-label">
-
-                    <span>
-                        🛡️ SIF Detected
-                    </span>
-
-                    <span id="chartSif">
-                        0
-                    </span>
-
-                </div>
-
-                <div class="bar-background">
-
-                    <div
-                        id="sifBar"
-                        class="bar sif-bar">
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- High Risk -->
-
-            <div class="bar-container">
-
-                <div class="bar-label">
-
-                    <span>
-                        🔴 High Risk
-                    </span>
-
-                    <span id="chartHigh">
-                        0
-                    </span>
-
-                </div>
-
-                <div class="bar-background">
-
-                    <div
-                        id="highBar"
-                        class="bar high-bar">
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Medium Risk -->
-
-            <div class="bar-container">
-
-                <div class="bar-label">
-
-                    <span>
-                        🟠 Medium Risk
-                    </span>
-
-                    <span id="chartMedium">
-                        0
-                    </span>
-
-                </div>
-
-                <div class="bar-background">
-
-                    <div
-                        id="mediumBar"
-                        class="bar medium-bar">
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Low Risk -->
-
-            <div class="bar-container">
-
-                <div class="bar-label">
-
-                    <span>
-                        🟢 Low Risk
-                    </span>
-
-                    <span id="chartLow">
-                        0
-                    </span>
-
-                </div>
-
-                <div class="bar-background">
-
-                    <div
-                        id="lowBar"
-                        class="bar low-bar">
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- Performance -->
-
-        <section class="performance-box">
-
-            <h2>🧠 Safety Intelligence</h2>
-
-            <p>
-                These statistics provide a high-level view of
-                safety observations analyzed by the OIL SIF
-                Detection System. Higher-risk observations can
-                be reviewed through the Reports section for
-                detailed assessment.
-            </p>
-
-        </section>
-
-
-        <!-- Navigation -->
-
-        <section
-            class="welcome"
-            style="margin-top: 30px;">
-
-            <h2>Safety Management</h2>
-
-            <p>
-                Navigate to other sections of the OIL SIF
-                Detection System.
-            </p>
-
-
-            <div>
-
-                <button
-                    onclick="window.location.href='analyze.html'">
-                    🔎 Analyze Report
-                </button>
-
-
-                <button
-                    onclick="window.location.href='reports.html'">
-                    📋 View Reports
-                </button>
-
-
-                <button
-                    onclick="window.location.href='dashboard.html'">
-                    📊 Dashboard
-                </button>
-
-
-                <button
-                    onclick="window.location.href='index.html'">
-                    🏠 Home
-                </button>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <footer>
+        <h2>📈 Rate Summary</h2>
 
         <p>
-            OIL SIF Detection System
+            Percentage-based indicators calculated from
+            all analyzed safety reports.
         </p>
+
+        <div class="rate-grid">
+
+            <div class="rate-card">
+
+                <h3>🛡️ SIF Rate</h3>
+
+                <div
+                    id="sifRate"
+                    class="rate-value">
+                    0%
+                </div>
+
+            </div>
+
+
+            <div class="rate-card">
+
+                <h3>🔴 High Risk Rate</h3>
+
+                <div
+                    id="highRiskRate"
+                    class="rate-value">
+                    0%
+                </div>
+
+            </div>
+
+
+            <div class="rate-card">
+
+                <h3>🟠 Medium Risk Rate</h3>
+
+                <div
+                    id="mediumRiskRate"
+                    class="rate-value">
+                    0%
+                </div>
+
+            </div>
+
+
+            <div class="rate-card">
+
+                <h3>🟢 Low Risk Rate</h3>
+
+                <div
+                    id="lowRiskRate"
+                    class="rate-value">
+                    0%
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Risk Distribution -->
+
+    <section
+        class="welcome distribution">
+
+        <h2>📊 Safety Risk Distribution</h2>
 
         <p>
-            Backend powered by FastAPI
+            Distribution of SIF detections and risk levels
+            across all analyzed safety reports.
         </p>
 
-    </footer>
+
+        <div class="bar-row">
+
+            <div class="bar-label">
+
+                <span>SIF Detected</span>
+
+                <span id="sifBarValue">
+                    0%
+                </span>
+
+            </div>
+
+            <div class="bar-container">
+
+                <div
+                    id="sifBar"
+                    class="bar">
+                </div>
+
+            </div>
+
+        </div>
 
 
-    <!-- Backend API -->
+        <div class="bar-row">
 
-    <script src="js/api.js"></script>
+            <div class="bar-label">
 
-    <!-- Existing Statistics -->
+                <span>High Risk</span>
 
-    <script src="js/statistics.js"></script>
+                <span id="highRiskBarValue">
+                    0%
+                </span>
 
+            </div>
 
-    <!-- Statistics Visualization -->
+            <div class="bar-container">
 
-    <script>
+                <div
+                    id="highRiskBar"
+                    class="bar">
+                </div>
 
-        async function loadSafetyStatistics() {
+            </div>
 
-            try {
-
-                const data =
-                    await getStatistics();
-
-
-                if (!data) {
-
-                    throw new Error(
-                        "Unable to load statistics."
-                    );
-
-                }
+        </div>
 
 
-                const total =
-                    data.total_reports ?? 0;
+        <div class="bar-row">
 
-                const sif =
-                    data.sif_reports ?? 0;
+            <div class="bar-label">
 
-                const high =
-                    data.high_risk ?? 0;
+                <span>Medium Risk</span>
 
-                const medium =
-                    data.medium_risk ?? 0;
+                <span id="mediumRiskBarValue">
+                    0%
+                </span>
 
-                const low =
-                    data.low_risk ?? 0;
+            </div>
 
+            <div class="bar-container">
 
-                /*
-                 * Calculate percentages
-                 */
+                <div
+                    id="mediumRiskBar"
+                    class="bar">
+                </div>
 
-                const sifPercentage =
-                    total > 0
-                        ? (sif / total) * 100
-                        : 0;
+            </div>
 
-                const highPercentage =
-                    total > 0
-                        ? (high / total) * 100
-                        : 0;
-
-                const mediumPercentage =
-                    total > 0
-                        ? (medium / total) * 100
-                        : 0;
-
-                const lowPercentage =
-                    total > 0
-                        ? (low / total) * 100
-                        : 0;
+        </div>
 
 
-                /*
-                 * Summary percentages
-                 */
+        <div class="bar-row">
 
-                document.getElementById(
-                    "sifPercent"
-                ).textContent =
-                    sifPercentage.toFixed(1) + "%";
+            <div class="bar-label">
 
+                <span>Low Risk</span>
 
-                document.getElementById(
-                    "highPercent"
-                ).textContent =
-                    highPercentage.toFixed(1) + "%";
+                <span id="lowRiskBarValue">
+                    0%
+                </span>
 
+            </div>
 
-                document.getElementById(
-                    "mediumPercent"
-                ).textContent =
-                    mediumPercentage.toFixed(1) + "%";
+            <div class="bar-container">
 
+                <div
+                    id="lowRiskBar"
+                    class="bar">
+                </div>
 
-                document.getElementById(
-                    "lowPercent"
-                ).textContent =
-                    lowPercentage.toFixed(1) + "%";
+            </div>
+
+        </div>
+
+    </section>
 
 
-                /*
-                 * Chart values
-                 */
+    <!-- Safety Intelligence -->
 
-                document.getElementById(
-                    "chartSif"
-                ).textContent =
-                    sif;
+    <section
+        class="welcome"
+        style="margin-top: 30px;">
 
+        <h2>🧠 Safety Intelligence</h2>
 
-                document.getElementById(
-                    "chartHigh"
-                ).textContent =
-                    high;
+        <p>
+            These statistics provide a high-level view of
+            safety observations and help identify patterns
+            requiring further attention and preventive action.
+        </p>
 
-
-                document.getElementById(
-                    "chartMedium"
-                ).textContent =
-                    medium;
+    </section>
 
 
-                document.getElementById(
-                    "chartLow"
-                ).textContent =
-                    low;
+    <!-- Navigation -->
+
+    <section
+        class="welcome"
+        style="margin-top: 30px;">
+
+        <h2>Navigation</h2>
+
+        <p>
+            Continue analyzing reports or return to the
+            dashboard and report history.
+        </p>
+
+        <div>
+
+            <button
+                onclick="window.location.href='analyze.html'">
+                🔎 Analyze New Report
+            </button>
+
+            <button
+                onclick="window.location.href='reports.html'">
+                📋 View Reports
+            </button>
+
+            <button
+                onclick="window.location.href='dashboard.html'">
+                📊 Dashboard
+            </button>
+
+            <button
+                onclick="window.location.href='index.html'">
+                🏠 Home
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
 
 
-                /*
-                 * Chart bars
-                 */
+<footer>
 
-                document.getElementById(
-                    "sifBar"
-                ).style.width =
-                    sifPercentage + "%";
+    <p>
+        OIL SIF Detection System
+    </p>
 
+    <p>
+        Backend powered by FastAPI
+    </p>
 
-                document.getElementById(
-                    "highBar"
-                ).style.width =
-                    highPercentage + "%";
+</footer>
 
 
-                document.getElementById(
-                    "mediumBar"
-                ).style.width =
-                    mediumPercentage + "%";
+<script src="js/api.js"></script>
+
+<script src="js/statistics.js"></script>
 
 
-                document.getElementById(
-                    "lowBar"
-                ).style.width =
-                    lowPercentage + "%";
+<script>
 
+    async function loadDetailedStatistics() {
 
-            } catch (error) {
+        try {
 
-                console.error(
-                    "Statistics visualization error:",
-                    error
+            const data =
+                await getStatistics();
+
+            if (!data) {
+                throw new Error(
+                    "No statistics received."
                 );
+            }
+
+            const total =
+                data.total_reports || 0;
+
+            const sif =
+                data.sif_reports || 0;
+
+            const high =
+                data.high_risk || 0;
+
+            const medium =
+                data.medium_risk || 0;
+
+            const low =
+                data.low_risk || 0;
+
+
+            if (total === 0) {
+
+                return;
 
             }
 
+
+            const sifRate =
+                (sif / total) * 100;
+
+            const highRate =
+                (high / total) * 100;
+
+            const mediumRate =
+                (medium / total) * 100;
+
+            const lowRate =
+                (low / total) * 100;
+
+
+            document.getElementById(
+                "sifRate"
+            ).textContent =
+                sifRate.toFixed(1) + "%";
+
+
+            document.getElementById(
+                "highRiskRate"
+            ).textContent =
+                highRate.toFixed(1) + "%";
+
+
+            document.getElementById(
+                "mediumRiskRate"
+            ).textContent =
+                mediumRate.toFixed(1) + "%";
+
+
+            document.getElementById(
+                "lowRiskRate"
+            ).textContent =
+                lowRate.toFixed(1) + "%";
+
+
+            document.getElementById(
+                "sifBar"
+            ).style.width =
+                sifRate + "%";
+
+
+            document.getElementById(
+                "highRiskBar"
+            ).style.width =
+                highRate + "%";
+
+
+            document.getElementById(
+                "mediumRiskBar"
+            ).style.width =
+                mediumRate + "%";
+
+
+            document.getElementById(
+                "lowRiskBar"
+            ).style.width =
+                lowRate + "%";
+
+
+            document.getElementById(
+                "sifBarValue"
+            ).textContent =
+                sifRate.toFixed(1) + "%";
+
+
+            document.getElementById(
+                "highRiskBarValue"
+            ).textContent =
+                highRate.toFixed(1) + "%";
+
+
+            document.getElementById(
+                "mediumRiskBarValue"
+            ).textContent =
+                mediumRate.toFixed(1) + "%";
+
+
+            document.getElementById(
+                "lowRiskBarValue"
+            ).textContent =
+                lowRate.toFixed(1) + "%";
+
         }
 
+        catch (error) {
 
-        loadSafetyStatistics();
+            console.error(
+                "Detailed statistics error:",
+                error
+            );
 
-    </script>
+        }
 
-</body>
+    }
 
-</html>
+    loadDetailedStatistics();
+
+</script>
+
+</body></html>
