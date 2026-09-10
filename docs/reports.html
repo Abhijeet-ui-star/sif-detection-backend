@@ -1,73 +1,114 @@
-nexus
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
+<!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Safety Reports - OIL SIF Detection</title>
 
-    <title>Reports - OIL SIF Detection</title>
+<link rel="stylesheet" href="css/style.css">
 
-    <link rel="stylesheet" href="css/style.css">
-</head>
+</head><body><header>
 
-<body>
+    <h1>SAFETY REPORTS</h1>
 
-    <header>
-        <h1>SAFETY REPORTS</h1>
-        <p>OIL SIF Detection System</p>
-    </header>
+    <p>
+        OIL SIF Detection System
+    </p>
+
+</header>
 
 
-    <main>
+<main>
 
-        <section class="welcome">
+    <!-- Reports Introduction -->
+    <section class="welcome">
 
-            <h2>Report History</h2>
+        <h2>Safety Report History</h2>
+
+        <p>
+            Review previously analyzed safety observations,
+            SIF potential, risk levels, hazards, barrier failures,
+            and analysis confidence.
+        </p>
+
+    </section>
+
+
+    <!-- Reports -->
+    <section
+        class="welcome"
+        style="margin-top: 30px;">
+
+        <h2>Analyzed Reports</h2>
+
+        <p>
+            Reports are displayed with the most recently
+            analyzed observation first.
+        </p>
+
+
+        <div id="reportsContainer">
 
             <p>
-                Previously analyzed safety observations are shown below.
+                Loading reports...
             </p>
 
-            <div id="reportsContainer">
+        </div>
 
-                <p>Loading reports...</p>
+    </section>
 
-            </div>
 
-            <br>
+    <!-- Navigation -->
+    <section
+        class="welcome"
+        style="margin-top: 30px;">
 
-            <button onclick="window.location.href='analyze.html'">
-                Analyze New Report
+        <h2>Report Management</h2>
+
+        <p>
+            Analyze a new safety observation or return to
+            the dashboard and home page.
+        </p>
+
+
+        <div>
+
+            <button
+                onclick="window.location.href='analyze.html'">
+                🔎 Analyze New Report
             </button>
 
-            <button onclick="window.location.href='dashboard.html'">
-                Back to Dashboard
+
+            <button
+                onclick="window.location.href='dashboard.html'">
+                📊 Back to Dashboard
             </button>
 
-            <button onclick="window.location.href='index.html'">
-                Home
+
+            <button
+                onclick="window.location.href='index.html'">
+                🏠 Home
             </button>
 
-        </section>
+        </div>
 
-    </main>
+    </section>
 
-
-    <footer>
-
-        <p>OIL SIF Detection System</p>
-
-        <p>Backend powered by FastAPI</p>
-
-    </footer>
+</main>
 
 
-    <script src="js/api.js"></script>
+<footer>
 
-    <script src="js/reports.js"></script>
+    <p>
+        OIL SIF Detection System
+    </p>
 
-</body>
+    <p>
+        Backend powered by FastAPI
+    </p>
 
-</html>
-```
+</footer>
+
+
+<script src="js/api.js"></script>
+
+<script src="js/reports.js"></script>
+
+</body></html>
