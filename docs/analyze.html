@@ -5,19 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Analyze Safety Report</title>
+    <title>Analyze Safety Report - OIL SIF Detection</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <!-- Header -->
     <header>
-        <h1>Safety Report Analysis</h1>
+        <h1>SAFETY REPORT ANALYSIS</h1>
         <p>OIL SIF Detection System</p>
     </header>
-
 
     <main>
 
@@ -34,9 +32,7 @@
             <textarea
                 id="reportInput"
                 placeholder="Example: Worker entered a confined space. Oxygen level is low and toxic gas is detected."
-                rows="7"
-                style="width: 90%; padding: 15px; font-size: 16px; margin: 20px 0; border: 1px solid #ccc; border-radius: 6px;">
-            </textarea>
+                rows="7"></textarea>
 
             <br>
 
@@ -44,9 +40,9 @@
                 Analyze Report
             </button>
 
-            <button onclick="window.location.href='./index.html'">
-    Back to Home
-</button>
+            <button onclick="window.location.href='index.html'">
+                Back to Home
+            </button>
 
         </section>
 
@@ -62,49 +58,71 @@
             <div class="feature-card">
 
                 <h3>SIF Potential</h3>
+
                 <p id="sifPotential">-</p>
 
             </div>
 
+
             <div class="feature-card">
 
                 <h3>Risk Level</h3>
+
                 <p id="riskLevel">-</p>
 
             </div>
 
+
             <div class="feature-card">
 
                 <h3>Life Saving Rule</h3>
+
                 <p id="lifeSavingRule">-</p>
 
             </div>
 
+
             <div class="feature-card">
 
                 <h3>Hazard</h3>
+
                 <p id="hazard">-</p>
 
             </div>
 
+
             <div class="feature-card">
 
                 <h3>Barrier Failure</h3>
+
                 <p id="barrierFailure">-</p>
 
             </div>
 
+
             <div class="feature-card">
 
                 <h3>Confidence</h3>
+
                 <p id="confidence">-</p>
+
+                <div
+                    id="confidenceBarContainer"
+                    style="width: 100%; height: 12px; background: #e5e5e5; border-radius: 10px; overflow: hidden;">
+
+                    <div
+                        id="confidenceBar"
+                        style="width: 0%; height: 100%; transition: width 0.5s;">
+                    </div>
+
+                </div>
 
             </div>
 
         </section>
 
 
-        <!-- Error Message -->
+        <!-- Error Section -->
         <section
             id="errorSection"
             class="welcome"
@@ -129,7 +147,6 @@
 
 
     <script src="js/api.js"></script>
-
     <script src="js/analyze.js"></script>
 
 </body>
