@@ -1,151 +1,224 @@
 // Load all reports from backend
+
 async function loadReports() {
 
-    const container = document.getElementById("reportsContainer");
+    const container =
+        document.getElementById("reportsContainer");
+
 
     try {
 
-        const data = await getReports();
+        console.log("Loading reports...");
 
-        if (!data.success) {
-            throw new Error("Unable to load reports");
+
+        // Get reports from backend
+
+        const reports = await getReports();
+
+
+        console.log(
+            "REPORTS RESPONSE:",
+            reports
+        );
+
+
+        // Check backend response
+
+        if (!Array.isArray(reports)) {
+
+            throw new Error(
+                "Invalid reports response from backend."
+            );
+
         }
 
-        // Check if reports exist
-        if (data.reports.length === 0) {
+
+        // No reports
+
+        if (reports.length === 0) {
 
             container.innerHTML = `
                 <p>No safety reports found.</p>
             `;
 
             return;
+
         }
 
+
         // Clear loading message
+
         container.innerHTML = "";
 
-        // Create cards for each report
-        data.reports.forEach(report => {
 
-            const reportCard = document.createElement("div");
+        // Create report cards
 
-            reportCard.className = "feature-card";
-            reportCard.style.marginTop = "20px";
+        reports.forEach(report => {
+
+            const reportCard =
+                document.createElement("div");
+
+
+            reportCard.className =
+                "feature-card";
+
+            reportCard.style.marginTop =
+                "20px";
+
+
+            const confidence =
+                typeof report.confidence === "number"
+                    ? Math.round(report.confidence * 100) + "%"
+                    : "N/A";
+
 
             reportCard.innerHTML = `
-                <h3>Report #${report.id}</h3>
+
+                <h3>
+                    Report #${report.id}
+                </h3>
+
 
                 <p>
-                    <strong>Observation:</strong><br>
-                    ${report.report}
+
+                    <strong>
+                        Observation:
+                    </strong>
+
+                    <br>
+
+                    ${report.report ?? "N/A"}
+
                 </p>
+
 
                 <p>
-                    <strong>SIF Potential:</strong>
-                    ${report.sif_potential}
+
+                    <strong>
+                        SIF Potential:
+                    </strong>
+
+                    ${report.sif_potential ?? "N/A"}
+
                 </p>
+
 
                 <p>
-                    <strong>Risk Level:</strong>
-                    ${report.risk_level}
+
+                    <strong>
+                        Risk Level:
+                    </strong>
+
+                    ${report.risk_level ?? "N/A"}
+
                 </p>
+
 
                 <p>
-                    <strong>Life Saving Rule:</strong>
-                    ${report.life_saving_rule}
+
+                    <strong>
+                        Life Saving Rule:
+                    </strong>
+
+                    ${report.life_saving_rule ?? "N/A"}
+
                 </p>
+
 
                 <p>
-                    <strong>Hazard:</strong>
-                    ${report.hazard}
+
+                    <strong>
+                        Hazard:
+                    </strong>
+
+                    ${report.hazard ?? "N/A"}
+
                 </p>
+
 
                 <p>
-                    <strong>Barrier Failure:</strong>
-                    ${report.barrier_failure}
+
+                    <strong>
+                        Barrier Failure:
+                    </strong>
+
+                    ${report.barrier_failure ?? "N/A"}
+
                 </p>
+
 
                 <p>
-                    <strong>Confidence:</strong>
-                    ${(report.confidence * 100).toFixed(0)}%
+
+                    <strong>
+                        Confidence:
+                    </strong>
+
+                    ${confidence}
+
                 </p>
+
 
                 <p>
-                    <strong>Date:</strong>
-                    ${report.created_at}
+
+                    <strong>
+                        Date:
+                    </strong>
+
+                    ${report.created_at ?? "N/A"}
+
                 </p>
 
-                <button onclick="viewReportDetails(${report.id})">
+
+                <button
+                    onclick="viewReportDetails(${report.id})"
+                >
                     View Details
                 </button>
 
-                <button onclick="deleteReportFromPage(${report.id})">
-                    Delete Report
-                </button>
             `;
 
-            container.appendChild(reportCard);
+
+            container.appendChild(
+                reportCard
+            );
 
         });
 
-    } catch (error) {
+    }
 
-        console.error("Reports error:", error);
+
+    catch (error) {
+
+        console.error(
+            "Reports error:",
+            error
+        );
+
 
         container.innerHTML = `
+
             <p>
                 Unable to load reports.
                 Please check the backend connection.
             </p>
+
         `;
+
     }
+
 }
 
 
 // View report details
+
 function viewReportDetails(reportId) {
 
     window.location.href =
         "report-details.html?id=" + reportId;
-}
 
-
-// Delete report
-async function deleteReportFromPage(reportId) {
-
-    const confirmDelete = confirm(
-        "Are you sure you want to delete this report?"
-    );
-
-    if (!confirmDelete) {
-        return;
-    }
-
-    try {
-
-        const data = await deleteReport(reportId);
-
-        if (data.success) {
-
-            alert("Report deleted successfully.");
-
-            loadReports();
-
-        } else {
-
-            alert("Unable to delete report.");
-
-        }
-
-    } catch (error) {
-
-        console.error("Delete error:", error);
-
-        alert("Backend connection error.");
-
-    }
 }
 
 
 // Load reports when page opens
+
 loadReports();
