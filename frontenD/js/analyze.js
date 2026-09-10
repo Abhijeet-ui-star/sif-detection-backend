@@ -2,7 +2,6 @@
 async function analyzeSafetyReport() {
 
     const reportInput = document.getElementById("reportInput");
-
     const reportText = reportInput.value.trim();
 
     // Check empty report
@@ -13,49 +12,67 @@ async function analyzeSafetyReport() {
 
     try {
 
+        // Show loading
+        document.getElementById("resultSection").style.display = "block";
+        document.getElementById("errorSection").style.display = "none";
+
+        document.getElementById("sifPotential").textContent = "Analyzing...";
+        document.getElementById("riskLevel").textContent = "Analyzing...";
+        document.getElementById("lifeSavingRule").textContent = "Analyzing...";
+        document.getElementById("hazard").textContent = "Analyzing...";
+        document.getElementById("barrierFailure").textContent = "Analyzing...";
+        document.getElementById("confidence").textContent = "Analyzing...";
+
         // Call backend API
         const data = await analyzeReport(reportText);
 
-        // Check backend response
-        if (!data.success) {
-            showError("Unable to analyze the report.");
-            return;
-        }
+        console.log("BACKEND RESPONSE:", data);
 
-        // Get result from backend
-        const result = data.result;
+        // Backend returns the result directly
+        if (!data || !data.sif_potential) {
+            throw new Error("Invalid response from backend.");
+        }
 
         // Display result
         document.getElementById("sifPotential").textContent =
-            result.sif_potential;
+            data.sif_potential ?? "N/A";
 
         document.getElementById("riskLevel").textContent =
-            result.risk_level;
+            data.risk_level ?? "N/A";
 
         document.getElementById("lifeSavingRule").textContent =
-            result.life_saving_rule;
+            data.life_saving_rule ?? "N/A";
 
         document.getElementById("hazard").textContent =
-            result.hazard;
+            data.hazard ?? "N/A";
 
         document.getElementById("barrierFailure").textContent =
-            result.barrier_failure;
+            data.barrier_failure ?? "N/A";
 
-        document.getElementById("confidence").textContent =
-            (result.confidence * 100) + "%";
+        // Confidence
+        if (typeof data.confidence === "number") {
 
+            document.getElementById("confidence").textContent =
+                Math.round(data.confidence * 100) + "%";
+
+        } else {
+
+            document.getElementById("confidence").textContent = "N/A";
+        }
 
         // Show result
-        document.getElementById("resultSection").style.display = "block";
+        document.getElementById("resultSection").style.display =
+            "block";
 
-        // Hide previous error
-        document.getElementById("errorSection").style.display = "none";
+        // Hide error
+        document.getElementById("errorSection").style.display =
+            "none";
 
     }
 
     catch (error) {
 
-        console.error(error);
+        console.error("Analysis error:", error);
 
         showError(
             "Unable to connect to backend. Please try again."
