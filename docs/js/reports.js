@@ -1,176 +1,280 @@
-async function analyzeSafetyReport() {
+// Load all reports from backend
 
-    const reportInput =
-        document.getElementById("reportInput");
+async function loadReports() {
 
-    const reportText =
-        reportInput.value.trim();
-
-
-    if (reportText === "") {
-
-        showError(
-            "Please enter a safety observation."
-        );
-
-        return;
-    }
-
+    const container =
+        document.getElementById("reportsContainer");
 
     try {
 
-        document.getElementById("resultSection")
-            .style.display = "block";
+        console.log("Loading reports...");
 
-        document.getElementById("errorSection")
-            .style.display = "none";
-
-
-        // Loading state
-
-        document.getElementById("sifPotential")
-            .textContent = "Analyzing...";
-
-        document.getElementById("riskLevel")
-            .textContent = "Analyzing...";
-
-        document.getElementById("lifeSavingRule")
-            .textContent = "Analyzing...";
-
-        document.getElementById("hazard")
-            .textContent = "Analyzing...";
-
-        document.getElementById("barrierFailure")
-            .textContent = "Analyzing...";
-
-        document.getElementById("confidence")
-            .textContent = "Analyzing...";
-
-
-        const confidenceBar =
-            document.getElementById("confidenceBar");
-
-        if (confidenceBar) {
-            confidenceBar.style.width = "0%";
-        }
-
-
-        // Send report to backend
-
-        const data =
-            await analyzeReport(reportText);
-
+        const reports =
+            await getReports();
 
         console.log(
-            "BACKEND RESPONSE:",
-            data
+            "REPORTS RESPONSE:",
+            reports
         );
 
 
-        // Validate response
+        // Check backend response
 
-        if (
-            !data ||
-            !data.sif_potential
-        ) {
+        if (!Array.isArray(reports)) {
 
             throw new Error(
-                "Invalid response from backend."
+                "Invalid reports response from backend."
             );
         }
 
 
-        // Display results
+        // No reports
 
-        document.getElementById("sifPotential")
-            .textContent =
-            data.sif_potential ?? "N/A";
+        if (reports.length === 0) {
 
+            container.innerHTML = `
+                <p>
+                    No safety reports found.
+                </p>
+            `;
 
-        document.getElementById("riskLevel")
-            .textContent =
-            data.risk_level ?? "N/A";
-
-
-        document.getElementById("lifeSavingRule")
-            .textContent =
-            data.life_saving_rule ?? "N/A";
+            return;
+        }
 
 
-        document.getElementById("hazard")
-            .textContent =
-            data.hazard ?? "N/A";
+        // Clear loading message
+
+        container.innerHTML = "";
 
 
-        document.getElementById("barrierFailure")
-            .textContent =
-            data.barrier_failure ?? "N/A";
+        // Create report cards
+
+        reports.forEach(report => {
+
+            const reportCard =
+                document.createElement("div");
 
 
-        // Confidence
+            reportCard.className =
+                "feature-card";
 
-        if (
-            typeof data.confidence === "number"
-        ) {
+
+            reportCard.style.marginTop =
+                "20px";
+
+
+            // Confidence
 
             const confidence =
-                Math.round(
-                    data.confidence * 100
-                );
+                typeof report.confidence === "number"
+                    ? Math.round(
+                        report.confidence * 100
+                    ) + "%"
+                    : "N/A";
 
 
-            document.getElementById("confidence")
-                .textContent =
-                confidence + "%";
+            // SIF status
+
+            let sifStatus =
+                report.sif_potential ?? "N/A";
 
 
-            if (confidenceBar) {
+            if (
+                report.sif_potential === "YES"
+            ) {
 
-                confidenceBar.style.width =
-                    confidence + "%";
+                sifStatus =
+                    "🔴 YES - SIF";
+
+            } else if (
+                report.sif_potential === "NO"
+            ) {
+
+                sifStatus =
+                    "🟢 NO - SIF";
             }
 
-        } else {
 
-            document.getElementById("confidence")
-                .textContent = "N/A";
+            // Risk status
 
-            if (confidenceBar) {
+            let riskStatus =
+                report.risk_level ?? "N/A";
 
-                confidenceBar.style.width = "0%";
+
+            if (
+                report.risk_level === "HIGH"
+            ) {
+
+                riskStatus =
+                    "🔴 HIGH";
+
+            } else if (
+                report.risk_level === "MEDIUM"
+            ) {
+
+                riskStatus =
+                    "🟠 MEDIUM";
+
+            } else if (
+                report.risk_level === "LOW"
+            ) {
+
+                riskStatus =
+                    "🟢 LOW";
             }
-        }
+
+
+            // Report card
+
+            reportCard.innerHTML = `
+
+                <h3>
+                    Report #${report.id}
+                </h3>
+
+
+                <p>
+
+                    <strong>
+                        SIF Potential:
+                    </strong>
+
+                    ${sifStatus}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Risk Level:
+                    </strong>
+
+                    ${riskStatus}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Observation:
+                    </strong>
+
+                    <br>
+
+                    ${report.report ?? "N/A"}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Life Saving Rule:
+                    </strong>
+
+                    ${report.life_saving_rule ?? "N/A"}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Hazard:
+                    </strong>
+
+                    ${report.hazard ?? "N/A"}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Barrier Failure:
+                    </strong>
+
+                    ${report.barrier_failure ?? "N/A"}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Confidence:
+                    </strong>
+
+                    ${confidence}
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Date:
+                    </strong>
+
+                    ${report.created_at ?? "N/A"}
+
+                </p>
+
+
+                <button
+                    onclick="
+                        viewReportDetails(${report.id})
+                    "
+                >
+                    View Details
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                reportCard
+            );
+
+        });
 
 
     } catch (error) {
 
         console.error(
-            "Analysis error:",
+            "Reports error:",
             error
         );
 
-        showError(
-            "Unable to connect to backend. Please try again."
-        );
+
+        container.innerHTML = `
+
+            <p>
+
+                Unable to load reports.
+                Please check the backend connection.
+
+            </p>
+
+        `;
+
     }
+
 }
 
 
-function showError(message) {
+// View report details
 
-    document.getElementById("errorMessage")
-        .textContent = message;
-
-    document.getElementById("errorSection")
-        .style.display = "block";
-
-    document.getElementById("resultSection")
-        .style.display = "none";
-}
-
-
-function goHome() {
+function viewReportDetails(reportId) {
 
     window.location.href =
-        "index.html";
+        "report-details.html?id=" + reportId;
+
 }
+
+
+// Load reports when page opens
+
+loadReports();
